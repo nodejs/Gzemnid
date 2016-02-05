@@ -4,9 +4,19 @@
   "description": "",
   "dependencies": {
     "JSONStream": "^1.0.6",
+    "babel-polyfill": "^6.3.14",
+    "bhttp": "^1.2.1",
+    "bluebird": "^3.2.1",
     "sync-request": "^3.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-changed": "^1.3.0",
+    "gulp-plumber": "^1.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ChALkeR/Gzemnid.git"
@@ -14,5 +24,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ChALkeR/Gzemnid/issues"
+  },
+  "scripts": {
+    "build": "node ./node_modules/.bin/gulp build",
+    "watch": "node ./node_modules/.bin/gulp"
   }
 }
