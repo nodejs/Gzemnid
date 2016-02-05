@@ -1,4 +1,5 @@
 *~
+node_modules
 
 current
 current.ex
@@ -7,5 +8,9 @@ outdated.ex
 
 data-2*
 log
+byField*json
+update.*txt
+stats.json
+stats.txt
 
 old
