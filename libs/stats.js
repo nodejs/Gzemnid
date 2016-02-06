@@ -1,59 +1,94 @@
-const fs = require('fs');
+'use strict';
+
+require('babel-polyfill');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs'));
+const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
-var request = require('sync-request');
 
-var stream = fs.createReadStream('byField.info.json').pipe(JSONStream.parse('*'));
-
-var data = fs.existsSync('stats.json') ? require('./stats.json') : {};
-var map = new Map();
-Object.keys(data).forEach(function(file) {
-	map.set(file, false);
+const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
+const grouplimit = 8000;
+const session = bhttp.session({
+	headers: {
+		'user-agent': 'Gzemnid http://oserv.org/npm/Gzemnid/'
+	}
 });
 
-
-var count = 0;
-var updated = 0;
-
-var grouplimit = 7940;
-
-var group = [];
-function get() {
-	var res = request('GET', 'https://api.npmjs.org/downloads/point/last-month/' + group.join(','), {
-		'headers': {
-			'user-agent': 'Gzemnid http://oserv.org/npm/Gzemnid/'
-		}
+function buildMap(data) {
+	const map = new Map();
+	Object.keys(data).forEach(function(file) {
+		map.set(file, false);
 	});
-	res = JSON.parse(res.getBody('utf8'));
-	console.log(' request size: ' + group.length);
-	Object.keys(res).forEach(function(name) {
-		if (name !== res[name].package) {
-			console.log(name + ': bad package name' + res[name].package);
-		}
-		data[name] = res[name].downloads;
-	});
-	group = [];
-	fs.writeFileSync('stats.json', JSON.stringify(data, undefined, 1));
+	return map;
 }
-stream.on('data', function(info) {
-	count++;
-	if (map.has(info.name)) {
-		return;
-	}
-	var ngroup = group;
-	ngroup.push(info.name);
-	if (group.length > 0 && ngroup.join(',').length >= grouplimit) {
-		get();
-	}
-	group.push(info.name);
-	map.set(info.name, true);
-	if (count % 1000 === 0) {
-		console.log(count + '...');
-	}
-});
 
-stream.on('end', function() {
-	get();
-	console.log('Total: ' + count + '.');
-	console.log('New/updated: ' + updated + '.');
-	console.log('END');
-});
+// We could use the stream directly, but then we won't receive nice stats beforehand.
+function getGroups(map) {
+	const stream = fs.createReadStream('byField.info.json').pipe(JSONStream.parse('*'));
+
+	const deferred = Promise.pending();
+	const groups = [];
+	let group = [];
+	let groupLength = -1;
+	let total = 0, needed = 0;
+
+	stream.on('data', (info) => {
+		let name = info.name;
+		total++;
+		if (total % 10000 === 0) {
+			console.log(`Reading: ${total}...`);
+		}
+		if (map.has(name)) return;
+		needed++;
+		if (groupLength > 0 && (groupLength + 1 + name.length) >= grouplimit) {
+			groups.push(group);
+			group = [];
+			groupLength = -1;
+		}
+		groupLength += 1 + name.length;
+		group.push(name);
+		map.set(name, true);
+	});
+	stream.on('end', () => {
+		groups.push(group);
+		deferred.resolve({groups, total, needed});
+		console.log(`Total: ${total}, neededed: ${needed}.`);
+	});
+
+	return deferred.promise;
+}
+
+async function process() {
+	const data = await fs.readFileAsync('./stats.json')
+		.then(JSON.parse)
+		.catch(() => {
+			return {};
+		});
+
+	const map = buildMap(data);
+	const {groups, total, needed} = await getGroups(map);
+
+	let requested = 0;
+	let processed = 0;
+	for (let i = 0; i < groups.length; i++) {
+		let group = groups[i];
+		requested += group.length;
+		console.log(`Request size: ${group.length}, total requested: ${requested}/${needed}.`);
+		let res = await session.get(endpoint + group.join(','));
+		if (res.statusCode !== 200) {
+			throw Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
+		}
+		let body = res.body;
+		Object.keys(body).forEach(function(name) {
+			processed++;
+			if (name !== body[name].package) {
+				console.log(`${name}: bad package name: ${body[name].package}!`);
+			}
+			data[name] = body[name].downloads;
+		});
+		console.log(`Processed: ${processed}/${needed}, saved: ${processed + total - needed}/${total}.`);
+		await fs.writeFileAsync('stats.json', JSON.stringify(data, undefined, 1));
+	}
+}
+
+process();
