@@ -1,8 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
-const Promise = require('bluebird');
-
 const commands = {
 	fetch: require('./fetch'),
 	stats: require('./stats'),

@@ -10,7 +10,7 @@ var files = {
 };
 
 var babelOptions = {
-	presets: ['es2015', 'stage-0']
+	presets: ['es2015-node5', 'stage-3']
 };
 
 gulp.task('libs', function () {
