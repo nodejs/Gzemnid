@@ -4,7 +4,7 @@ require('babel-polyfill');
 const Promise = require('bluebird');
 
 const commands = {
-	parse: require('./parse'),
+	fetch: require('./fetch'),
 	stats: require('./stats'),
 	update: require('./update')
 };
