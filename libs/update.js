@@ -1,6 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const JSONStream = require('JSONStream');
@@ -34,7 +33,7 @@ function toSet(arr) {
 	return set;
 }
 
-async function process() {
+async function run() {
 	const stream = fs.createReadStream('byField.info.json').pipe(JSONStream.parse('*'));
 	const out = {
 		mv_ex: fs.createWriteStream('update.mv.ex.txt'),
@@ -113,4 +112,6 @@ async function process() {
 	});
 }
 
-process();
+module.exports = {
+	run
+};

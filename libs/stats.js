@@ -1,6 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const bhttp = require('bhttp');
@@ -58,7 +57,7 @@ function getGroups(map) {
 	return deferred.promise;
 }
 
-async function process() {
+async function run() {
 	const data = await fs.readFileAsync('./stats.json')
 		.then(JSON.parse)
 		.catch(() => {
@@ -91,4 +90,6 @@ async function process() {
 	}
 }
 
-process();
+module.exports = {
+	run
+};

@@ -1,13 +1,12 @@
 'use strict';
 
-require('babel-polyfill');
 const fs = require('fs');
 const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
-async function process() {
+async function run() {
 	const source = await bhttp.get(registryUrl, {stream: true});
 	const stream = source.pipe(JSONStream.parse('rows.*'));
 
@@ -55,4 +54,6 @@ async function process() {
 	});
 }
 
-process();
+module.exports = {
+	run
+};
