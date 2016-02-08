@@ -1,5 +1,8 @@
 'use strict';
 
+const config = require('./config').config;
+const configManager = require('./config');
+
 const commands = {
 	fetch: require('./fetch'),
 	stats: require('./stats'),
@@ -7,6 +10,7 @@ const commands = {
 };
 
 async function main(argv) {
+	await configManager.load();
 	argv.shift();
 	if (argv.length > 0 && argv[0].endsWith('gzemnid.js')) {
 		argv.shift();
@@ -23,4 +27,4 @@ async function main(argv) {
 	commands[command].run();
 }
 
-main(process.argv);
+main(process.argv).catch(e => console.log(e));

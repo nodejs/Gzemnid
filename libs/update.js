@@ -4,6 +4,8 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const JSONStream = require('JSONStream');
 const readline = require('readline');
+const path = require('path');
+const config = require('./config').config;
 
 function readlines(path) {
 	return new Promise((accept, reject) => {
@@ -34,19 +36,19 @@ function toSet(arr) {
 }
 
 async function run() {
-	const stream = fs.createReadStream('byField.info.json').pipe(JSONStream.parse('*'));
+	const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
 	const out = {
-		mv_ex: fs.createWriteStream('update.mv.ex.txt'),
-		mv: fs.createWriteStream('update.mv.txt'),
-		rm_ex: fs.createWriteStream('update.mv.ex.txt'),
-		rm: fs.createWriteStream('update.mv.txt'),
-		wget: fs.createWriteStream('update.wget.txt')
+		mv_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
+		mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
+		rm_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
+		rm: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
+		wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
 	};
 
-	const broken = toSet(await readlines('./brokenurls.txt'));
-	const blacklist = toSet(await readlines('./blacklist.txt'));
-	const current = await fs.readdirAsync('../pool/current/');
-	const current_ex = await fs.readdirAsync('../pool/current.ex/');
+	const broken = toSet(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
+	const blacklist = toSet(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
+	const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+	const current_ex = await fs.readdirAsync(path.join(config.dir, 'current.ex/'));
 	const map = toMap(current), map_ex = toMap(current_ex);
 
 	if (current.join(',') !== current_ex.join(',')) {

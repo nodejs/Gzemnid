@@ -4,6 +4,8 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
+const path = require('path');
+const config = require('./config').config;
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const grouplimit = 8000;
@@ -23,7 +25,7 @@ function buildMap(data) {
 
 // We could use the stream directly, but then we won't receive nice stats beforehand.
 function getGroups(map) {
-	const stream = fs.createReadStream('byField.info.json').pipe(JSONStream.parse('*'));
+	const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
 
 	const deferred = Promise.pending();
 	const groups = [];
@@ -58,7 +60,8 @@ function getGroups(map) {
 }
 
 async function run() {
-	const data = await fs.readFileAsync('./stats.json')
+	const file = path.join(config.dir, 'stats.json');
+	const data = await fs.readFileAsync(file)
 		.then(JSON.parse)
 		.catch(() => {
 			return {};
@@ -86,7 +89,7 @@ async function run() {
 			data[name] = body[name].downloads;
 		});
 		console.log(`Processed: ${processed}/${needed}, saved: ${processed + total - needed}/${total}.`);
-		await fs.writeFileAsync('stats.json', JSON.stringify(data, undefined, 1));
+		await fs.writeFileAsync(file, JSON.stringify(data, undefined, 1));
 	}
 }
 

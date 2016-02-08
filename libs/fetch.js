@@ -3,6 +3,8 @@
 const fs = require('fs');
 const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
+const path = require('path');
+const config = require('./config').config;
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
@@ -10,7 +12,7 @@ async function run() {
 	const source = await bhttp.get(registryUrl, {stream: true});
 	const stream = source.pipe(JSONStream.parse('rows.*'));
 
-	const out = fs.createWriteStream('byField.info.json');
+	const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));
 	out.write('[\n')
 
 	let count = 0;

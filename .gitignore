@@ -2,11 +2,9 @@
 node_modules
 build
 private
+config.*.json
 
-current
-current.ex
-outdated
-outdated.ex
+pool
 
 data-2*
 log
