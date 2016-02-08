@@ -45,12 +45,12 @@ async function run() {
 
 		count++;
 		if (count % 1000 === 0) {
-			console.log(count + '...');
+			console.log(`${count}...`);
 		}
 	});
 
 	stream.on('end', () => {
-		console.log(count + '.');
+		console.log(`${count}.`);
 		out.write('\n]\n');
 		console.log('END');
 	});
