@@ -36,15 +36,6 @@ function toSet(arr) {
 }
 
 async function run() {
-	const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
-	const out = {
-		mv_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
-		mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
-		rm_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
-		rm: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
-		wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
-	};
-
 	const broken = toSet(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
 	const blacklist = toSet(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
 	const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
@@ -55,9 +46,17 @@ async function run() {
 		console.log('Warning: current and current.ex are not synced!');
 	}
 
+	const out = {
+		mv_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
+		mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
+		rm_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
+		rm: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
+		wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
+	};
+
 	let count = 0;
 	let updated = 0;
-
+	const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
 	stream.on('data', (info) => {
 		if (!info.tar) {
 			console.log(info.id + ': no tar!');
