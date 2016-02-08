@@ -11,7 +11,7 @@ const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const grouplimit = 8000;
 const session = bhttp.session({
 	headers: {
-		'user-agent': 'Gzemnid http://oserv.org/npm/Gzemnid/'
+		'user-agent': config.useragent || 'Gzemnid'
 	}
 });
 

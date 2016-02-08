@@ -9,7 +9,12 @@ const config = require('./config').config;
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
 async function run() {
-	const source = await bhttp.get(registryUrl, {stream: true});
+	const source = await bhttp.get(registryUrl, {
+		stream: true,
+		headers: {
+			'user-agent': config.useragent || 'Gzemnid'
+		}
+	});
 	const stream = source.pipe(JSONStream.parse('rows.*'));
 
 	const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));
