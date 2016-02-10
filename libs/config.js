@@ -9,7 +9,7 @@ const basedir = path.join(__dirname, '../');
 
 function configMerge(a, b) {
 	Object.keys(b).forEach((prop) => {
-		if (typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
+		if (b[prop] && typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
 			if (!a.hasOwnProperty(prop) || typeof a[prop] !== 'object') {
 				a[prop] = {};
 			}
