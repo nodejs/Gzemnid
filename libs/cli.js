@@ -27,4 +27,4 @@ async function main(argv) {
 	commands[command].run();
 }
 
-main(process.argv).catch(e => console.log(e));
+main(process.argv).catch(e => console.error(e.stack));
