@@ -37,7 +37,7 @@ async function spawn(command, args = [], options = {}) {
 }
 
 async function code(query, languages = null) {
-	const args = ['-hE', query];
+	const args = ['--no-filename', '-E', query];
 
 	if (!query) {
 		throw new Error('Empty query.');
