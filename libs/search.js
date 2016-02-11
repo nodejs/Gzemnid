@@ -23,15 +23,7 @@ async function spawn(command, args = [], options = {}) {
 	if (config.code.gid !== null) {
 		options.gid = config.code.gid;
 	}
-	const child = child_process.spawn(
-		command,
-		args,
-		Object.assign({
-			cwd: config.code.path,
-			env: {},
-			stdio: ['ignore', 'pipe', 'ignore']
-		}, options)
-	);
+	const child = child_process.spawn(command, args, options);
 	child.on('exit', done);
 	return child;
 }
