@@ -26,7 +26,7 @@
     "url": "https://github.com/ChALkeR/Gzemnid/issues"
   },
   "scripts": {
-    "build": "node ./node_modules/.bin/gulp build",
-    "watch": "node ./node_modules/.bin/gulp"
+    "build": "gulp build",
+    "watch": "gulp"
   }
 }
