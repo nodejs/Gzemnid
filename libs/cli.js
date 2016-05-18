@@ -5,6 +5,7 @@ const configManager = require('./config');
 const commands = {
   server: require('./server'),
   fetch: require('./fetch'),
+  meta: require('./meta'),
   stats: require('./stats'),
   update: require('./update')
 };
