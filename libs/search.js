@@ -4,7 +4,7 @@ const child_process = require('child_process');
 const config = require('./config').config;
 const Queue = require('./queue');
 
-const queue = new Queue(2);
+const queue = new Queue(3);
 
 async function spawn(command, args = [], options = {}) {
   const done = await queue.claim();
