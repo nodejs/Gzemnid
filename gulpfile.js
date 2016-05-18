@@ -9,16 +9,13 @@ var files = {
     libs: 'libs/**/*.js'
 };
 
-var babelOptions = {
-    presets: ['es2015-node5', 'stage-3']
-};
-
 gulp.task('libs', function () {
     gulp.src(files.libs)
         .pipe(plumber())
         .pipe(changed('build'))
-        .pipe(babel(babelOptions))
-        .pipe(babel())
+        .pipe(babel({
+            presets: ['stage-3']
+        }))
         .pipe(gulp.dest('build'));
 });
 
