@@ -1,6 +1,5 @@
 'use strict';
 
-const config = require('./config').config;
 const configManager = require('./config');
 
 const commands = {
@@ -17,13 +16,11 @@ async function main(argv) {
     argv.shift();
   }
   if (argv.length === 0) {
-    console.log(`No command specified!`);    
-    process.exit();
+    throw new Error('No command specified!');
   }
   const command = argv.shift();
   if (!commands.hasOwnProperty(command)) {
-    console.log(`No such command: ${command}.`);
-    process.exit();
+    throw new Error(`No such command: ${command}.`);
   }
   commands[command].run();
 }

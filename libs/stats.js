@@ -17,7 +17,7 @@ const session = bhttp.session({
 
 function buildMap(data) {
   const map = new Map();
-  Object.keys(data).forEach(function(file) {
+  Object.keys(data).forEach(file => {
     map.set(file, false);
   });
   return map;
@@ -31,17 +31,18 @@ function getGroups(map) {
   const groups = [];
   let group = [];
   let groupLength = -1;
-  let total = 0, needed = 0;
+  let total = 0;
+  let needed = 0;
 
-  stream.on('data', (info) => {
-    let name = info.name;
+  stream.on('data', info => {
+    const name = info.name;
     total++;
     if (total % 10000 === 0) {
       console.log(`Reading: ${total}...`);
     }
     if (map.has(name)) return;
     needed++;
-    if (groupLength > 0 && (groupLength + 1 + name.length) >= grouplimit) {
+    if (groupLength > 0 && groupLength + 1 + name.length >= grouplimit) {
       groups.push(group);
       group = [];
       groupLength = -1;
@@ -52,7 +53,7 @@ function getGroups(map) {
   });
   stream.on('end', () => {
     groups.push(group);
-    deferred.resolve({groups, total, needed});
+    deferred.resolve({ groups, total, needed });
     console.log(`Total: ${total}, neededed: ${needed}.`);
   });
 
@@ -63,31 +64,29 @@ async function run() {
   const file = path.join(config.dir, 'stats.json');
   const data = await fs.readFileAsync(file)
     .then(JSON.parse)
-    .catch(() => {
-      return {};
-    });
+    .catch(() => ({}));
 
   const map = buildMap(data);
-  const {groups, total, needed} = await getGroups(map);
+  const { groups, total, needed } = await getGroups(map);
 
   let requested = 0;
   let processed = 0;
   for (let i = 0; i < groups.length; i++) {
-    let group = groups[i];
+    const group = groups[i];
     requested += group.length;
     console.log(`Request size: ${group.length}, total requested: ${requested}/${needed}.`);
-    let res = await session.get(endpoint + group.join(','));
+    const res = await session.get(endpoint + group.join(','));
     if (res.statusCode !== 200) {
       throw Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
     }
-    let body = res.body;
-    Object.keys(body).forEach(function(name) {
+    const body = res.body;
+    for (const name of Object.keys(body)) {
       processed++;
       if (name !== body[name].package) {
         console.log(`${name}: bad package name: ${body[name].package}!`);
       }
       data[name] = body[name].downloads;
-    });
+    }
     console.log(`Processed: ${processed}/${needed}, saved: ${processed + total - needed}/${total}.`);
     await fs.writeFileAsync(file, JSON.stringify(data, undefined, 1));
   }

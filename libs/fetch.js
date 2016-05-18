@@ -18,10 +18,10 @@ async function run() {
   const stream = source.pipe(JSONStream.parse('rows.*'));
 
   const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));
-  out.write('[\n')
+  out.write('[\n');
 
   let count = 0;
-  stream.on('data', (data) => {
+  stream.on('data', data => {
     if (data.id !== data.key || data.id !== data.value.name) {
       console.log('UNEXPECTED: ' + JSON.stringify({
         id: data.id,

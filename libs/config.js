@@ -8,7 +8,7 @@ const config = {};
 const basedir = path.join(__dirname, '../');
 
 function configMerge(a, b) {
-  Object.keys(b).forEach((prop) => {
+  for (const prop of Object.keys(b)) {
     if (b[prop] && typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
       if (!a.hasOwnProperty(prop) || typeof a[prop] !== 'object') {
         a[prop] = {};
@@ -17,12 +17,12 @@ function configMerge(a, b) {
     } else {
       a[prop] = b[prop];
     }
-  });
+  }
 }
 
 async function read(filepath) {
   return await fs.readFileAsync(path.join(basedir, filepath), 'utf8')
-    .catch(() => { return 'null' })
+    .catch(() => 'null')
     .then(JSON.parse);
 }
 

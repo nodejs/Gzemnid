@@ -7,13 +7,13 @@ const readline = require('readline');
 const path = require('path');
 const config = require('./config').config;
 
-function readlines(path) {
+function readlines(file) {
   return new Promise((accept, reject) => {
     const lines = [];
-    const stream = fs.createReadStream(path);
+    const stream = fs.createReadStream(file);
     readline.createInterface({
       input: stream
-    }).on('line', (line) => {
+    }).on('line', line => {
       if (line.length > 0)
         lines.push(line);
     });
@@ -40,7 +40,8 @@ async function run() {
   const blacklist = toSet(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const current_ex = await fs.readdirAsync(path.join(config.dir, 'current.ex/'));
-  const map = toMap(current), map_ex = toMap(current_ex);
+  const map = toMap(current);
+  const map_ex = toMap(current_ex);
 
   if (current.join(',') !== current_ex.join(',')) {
     console.log('Warning: current and current.ex are not synced!');
@@ -57,7 +58,7 @@ async function run() {
   let count = 0;
   let updated = 0;
   const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
-  stream.on('data', (info) => {
+  stream.on('data', info => {
     if (!info.tar) {
       console.log(info.id + ': no tar!');
       return;
@@ -91,7 +92,7 @@ async function run() {
     }
   });
 
-  stream.on('end', () =>  {
+  stream.on('end', () => {
     console.log(`Total: ${count}.`);
     console.log(`New/updated: ${updated}.`);
     let moved = 0;

@@ -1,5 +1,7 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 class Queue {
 
   constructor(limit = 1) {
@@ -16,7 +18,7 @@ class Queue {
 
   claim() {
     let done = false;
-    return new Promise((accept) => {
+    return new Promise(accept => {
       this.queue.push(() => {
         this.busy++;
         accept(() => {
@@ -37,6 +39,6 @@ class Queue {
   get size() {
     return this.queue.length + this.busy;
   }
-};
+}
 
 module.exports = Queue;

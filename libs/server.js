@@ -1,7 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
-const logger = require('koa-logger')
+const logger = require('koa-logger');
 const route = require('koa-route');
 const stream = require('stream');
 const config = require('./config').config;
@@ -13,7 +13,9 @@ async function run() {
   api.use(logger());
 
   api.use(async (ctx, next) => {
-    ctx.res.on('close', () => { ctx.state.closed = true } );
+    ctx.res.on('close', () => {
+      ctx.state.closed = true;
+    });
 
     ctx.type = 'text/plain; charset=utf-8';
     ctx.set('Content-Security-Policy', 'default-src \'self\'');
@@ -46,10 +48,12 @@ async function run() {
     setImmediate(async () => {
       ctx.res.flushHeaders();
       child = await search.code(ctx.query.query);
-      child.on('exit', () => { child = undefined; })
+      child.on('exit', () => {
+        child = undefined;
+      });
       if (ctx.state.closed) child.kill('SIGKILL');
       child.stdout.pipe(ctx.body);
-    })
+    });
   }));
 
   api.listen(config.api.port);

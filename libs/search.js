@@ -41,7 +41,7 @@ async function code(query, languages = null) {
     languages = languages.split(',');
   }
 
-  for (let ext of config.code.extensions) {
+  for (const ext of config.code.extensions) {
     if (!languages || languages.indexOf(ext)) {
       args.push('slim.code.' + ext + '.lzo');
     }
