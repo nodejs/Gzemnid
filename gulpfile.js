@@ -1,11 +1,11 @@
 'use strict';
 
-var gulp = require('gulp');
-var changed = require('gulp-changed');
-var plumber = require('gulp-plumber');
-var babel = require('gulp-babel');
+const gulp = require('gulp');
+const changed = require('gulp-changed');
+const plumber = require('gulp-plumber');
+const babel = require('gulp-babel');
 
-var files = {
+const files = {
     libs: 'libs/**/*.js'
 };
 
