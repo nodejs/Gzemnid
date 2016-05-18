@@ -9,18 +9,18 @@ var files = {
     libs: 'libs/**/*.js'
 };
 
-gulp.task('libs', function () {
+gulp.task('libs', () =>
     gulp.src(files.libs)
         .pipe(plumber())
         .pipe(changed('build'))
         .pipe(babel({
             presets: ['stage-3']
         }))
-        .pipe(gulp.dest('build'));
-});
+        .pipe(gulp.dest('build'))
+);
 
 gulp.task('build', ['libs']);
 
-gulp.task('default', ['build'], function() {
+gulp.task('default', ['build'], () => {
     gulp.watch(files.libs, ['libs']);
 });
