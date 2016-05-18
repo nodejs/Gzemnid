@@ -4,9 +4,11 @@ const gulp = require('gulp');
 const changed = require('gulp-changed');
 const plumber = require('gulp-plumber');
 const babel = require('gulp-babel');
+const eslint = require('gulp-eslint');
 
 const files = {
-  libs: 'libs/**/*.js'
+  libs: ['libs/**/*.js'],
+  js: ['libs/**/*.js', '*.js']
 };
 
 gulp.task('libs', () =>
@@ -19,8 +21,13 @@ gulp.task('libs', () =>
     .pipe(gulp.dest('build'))
 );
 
+gulp.task('lint', () =>
+  gulp.src(files.js)
+    .pipe(eslint())
+);
+
 gulp.task('build', ['libs']);
 
-gulp.task('default', ['build'], () => {
-  gulp.watch(files.libs, ['libs']);
+gulp.task('default', ['lint', 'build'], () => {
+  gulp.watch(files.libs, ['lint', 'libs']);
 });
