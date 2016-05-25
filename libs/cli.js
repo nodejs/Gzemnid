@@ -6,6 +6,7 @@ const commands = {
   server: require('./server'),
   fetch: require('./fetch'),
   meta: require('./meta'),
+  depsdb: require('./depsdb'),
   stats: require('./stats'),
   update: require('./update')
 };
