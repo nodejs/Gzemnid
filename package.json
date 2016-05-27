@@ -29,6 +29,7 @@
   "bugs": {
     "url": "https://github.com/ChALkeR/Gzemnid/issues"
   },
+  "bin": "gzemnid.js",
   "scripts": {
     "lint": "gulp lint",
     "build": "gulp build",
