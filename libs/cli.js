@@ -24,7 +24,11 @@ async function main(argv) {
   if (!commands.hasOwnProperty(command)) {
     throw new Error(`No such command: ${command}.`);
   }
-  commands[command].run();
+  const method = argv.length > 0 ? argv.shift() : 'run';
+  if (!commands[command][method]) {
+    throw new Error(`No such method of command ${command}: ${method}.`);
+  }
+  commands[command][method](...argv);
 }
 
 main(process.argv).catch(e => console.error(e.stack));

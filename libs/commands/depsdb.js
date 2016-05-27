@@ -7,7 +7,7 @@ const path = require('path');
 const config = require('../config').config;
 const semver = require('semver');
 
-async function buildDeps() {
+async function plain() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
 
   const out = fs.createWriteStream(path.join(config.dir, 'deps.json'));
@@ -51,7 +51,7 @@ async function read(file, type = '$*') {
   return data;
 }
 
-async function buildDepsResolved() {
+async function resolved() {
   const data = await read('deps.json');
 
   const matchVersion = (name, spec) => {
@@ -124,7 +124,7 @@ async function buildDepsResolved() {
   console.log('Cleanup complete');
 }
 
-async function buildDepsNested() {
+async function nested() {
   const data = await read('deps-resolved.json');
 
   const build = (name, version, depth = 0) => {
@@ -166,11 +166,14 @@ async function buildDepsNested() {
 }
 
 async function run() {
-  await buildDeps();
-  await buildDepsResolved();
-  await buildDepsNested();
+  await plain();
+  await resolved();
+  await nested();
 }
 
 module.exports = {
+  plain,
+  resolved,
+  nested,
   run
 };
