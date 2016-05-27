@@ -4,7 +4,7 @@ const fs = require('fs');
 const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
 const path = require('path');
-const config = require('./config').config;
+const config = require('../config').config;
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 

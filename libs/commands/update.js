@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const JSONStream = require('JSONStream');
 const readline = require('readline');
 const path = require('path');
-const config = require('./config').config;
+const config = require('../config').config;
 
 function readlines(file) {
   return new Promise((accept, reject) => {

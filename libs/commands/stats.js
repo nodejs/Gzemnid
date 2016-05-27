@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
 const path = require('path');
-const config = require('./config').config;
+const config = require('../config').config;
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const grouplimit = 8000;

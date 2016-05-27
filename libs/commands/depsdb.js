@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const JSONStream = require('JSONStream');
 const path = require('path');
-const config = require('./config').config;
+const config = require('../config').config;
 const semver = require('semver');
 
 async function buildDeps() {

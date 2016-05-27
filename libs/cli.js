@@ -3,12 +3,12 @@
 const configManager = require('./config');
 
 const commands = {
-  server: require('./server'),
-  fetch: require('./fetch'),
-  meta: require('./meta'),
-  depsdb: require('./depsdb'),
-  stats: require('./stats'),
-  update: require('./update')
+  server: require('./commands/server'),
+  fetch: require('./commands/fetch'),
+  meta: require('./commands/meta'),
+  depsdb: require('./commands/depsdb'),
+  stats: require('./commands/stats'),
+  update: require('./commands/update')
 };
 
 async function main(argv) {

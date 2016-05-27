@@ -4,8 +4,8 @@ const Koa = require('koa');
 const logger = require('koa-logger');
 const route = require('koa-route');
 const stream = require('stream');
-const config = require('./config').config;
-const search = require('./search');
+const config = require('../config').config;
+const search = require('../search');
 
 async function run() {
   const api = new Koa();
