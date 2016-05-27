@@ -33,5 +33,15 @@
     "lint": "gulp lint",
     "build": "gulp build",
     "watch": "gulp"
-  }
+  },
+  "files": [
+    "data/**/*.txt",
+    "libs/**/*.js",
+    "build/**/*.js",
+    "scripts/*.sh",
+    ".eslintrc",
+    "config.json",
+    "gulpfile.js",
+    "gzemnid.js"
+  ]
 }
