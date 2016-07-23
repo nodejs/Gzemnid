@@ -50,8 +50,8 @@ async function run() {
   const out = {
     mv_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
     mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
-    rm_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
-    rm: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
+    rm_ex: fs.createWriteStream(path.join(config.dir, 'update.rm.ex.txt')),
+    rm: fs.createWriteStream(path.join(config.dir, 'update.rm.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
   };
 
