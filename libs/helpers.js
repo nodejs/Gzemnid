@@ -2,9 +2,39 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
+const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
+
+function toMap(arr, value = false) {
+  const map = new Map();
+  arr.forEach(x => map.set(x, value));
+  return map;
+}
+
+function toSet(arr) {
+  const set = new Set();
+  arr.forEach(x => set.add(x));
+  return set;
+}
+
+function readlines(file) {
+  return new Promise((accept, reject) => {
+    const lines = [];
+    const stream = fs.createReadStream(file);
+    readline.createInterface({
+      input: stream
+    }).on('line', line => {
+      if (line.length > 0) {
+        lines.push(line);
+      }
+    });
+    stream
+      .on('end', () => accept(lines))
+      .on('error', reject);
+  });
+}
 
 function jsonStream(file, type = '*') {
   const resolved = path.join(config.dir, file);
@@ -27,6 +57,9 @@ async function read(file, type = '$*') {
 }
 
 module.exports = {
+  toMap,
+  toSet,
+  readlines,
   jsonStream,
   read
 };

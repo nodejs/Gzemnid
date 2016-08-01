@@ -4,13 +4,7 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const config = require('../config').config;
-const { jsonStream } = require('../helpers');
-
-function toMap(arr, value = false) {
-  const map = new Map();
-  arr.forEach(x => map.set(x, value));
-  return map;
-}
+const { jsonStream, toMap } = require('../helpers');
 
 async function run() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
