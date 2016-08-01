@@ -52,6 +52,7 @@ async function run() {
     mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
     rm_ex: fs.createWriteStream(path.join(config.dir, 'update.rm.ex.txt')),
     rm: fs.createWriteStream(path.join(config.dir, 'update.rm.txt')),
+    download: fs.createWriteStream(path.join(config.dir, 'update.download.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
   };
 
@@ -80,6 +81,7 @@ async function run() {
       return;
     }
     if (!map.has(file)) {
+      out.download.write(`${url}\n`);
       out.wget.write(`wget -nc ${url}\n`);
       updated++;
     }
