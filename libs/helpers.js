@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
-const config = require('../config').config;
+const config = require('./config').config;
 
 function toMap(arr, value = false) {
   const map = new Map();
