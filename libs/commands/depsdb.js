@@ -2,10 +2,10 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
-const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
 const semver = require('semver');
+const { read } = require('../helpers');
 
 async function plain() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
@@ -34,21 +34,6 @@ async function plain() {
   await out.endAsync();
   console.log(`Total: ${count}.`);
   console.log('Dependencies complete.');
-}
-
-async function read(file, type = '$*') {
-  const data = {};
-  let count = 0;
-  const stream = fs.createReadStream(path.join(config.dir, file)).pipe(JSONStream.parse(type));
-  stream.on('data', obj => {
-    data[obj.key] = obj.value;
-    if (++count % 10000 === 0) console.log(`Read ${count}...`);
-  });
-  await new Promise(accept => {
-    stream.once('end', accept);
-  });
-  console.log('Read complete');
-  return data;
 }
 
 async function resolved() {

@@ -2,9 +2,9 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
-const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
+const { jsonStream } = require('../helpers');
 
 function toMap(arr, value = false) {
   const map = new Map();
@@ -24,7 +24,7 @@ async function run() {
 
   let count = 0;
   let updated = 0;
-  const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
+  const stream = jsonStream('byField.info.json');
   stream.on('data', info => {
     if (!info.tar) {
       console.log(info.id + ': no tar!');

@@ -3,9 +3,9 @@
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const bhttp = require('bhttp');
-const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
+const { jsonStream } = require('../helpers');
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const grouplimit = 8000;
@@ -25,7 +25,7 @@ function buildMap(data) {
 
 // We could use the stream directly, but then we won't receive nice stats beforehand.
 function getGroups(map) {
-  const stream = fs.createReadStream(path.join(config.dir, 'byField.info.json')).pipe(JSONStream.parse('*'));
+  const stream = jsonStream('byField.info.json');
 
   const deferred = Promise.pending();
   const groups = [];
