@@ -186,18 +186,56 @@ async function totals() {
     out.write(`${tgz}\n`);
   }
   await out.endAsync();
-  /*
-  for (const tgz of current) {
-    // TODO: recollect the data
-  }
-  */
   console.log(`Total: ${current.length}.`);
   console.log('packages.txt complete.');
+
+  const available = await fs.readdirAsync(path.join(config.dir, 'partials/'));
+  available.sort();
+  console.log(`Partials: ${available.length}.`);
+
+  const filenames = []; //['files.txt', 'slim.files.txt'];
+  for (const ext of extensions) {
+    //filenames.push(`files${ext}.txt`);
+    //filenames.push(`slim.files${ext}.txt`);
+    filenames.push(`slim.code${ext}.txt`);
+  }
+  const streams = {};
+  for (const file of filenames) {
+    streams[file] = fs.createWriteStream(path.join(outdir, file));
+  }
+  let built = 0;
+  for (const tgz of available) {
+    const tgzdir = path.join(config.dir, 'partials/', tgz);
+    for (const file of filenames) {
+      const filepath = path.join(tgzdir, file);
+      const stream = fs.createReadStream(filepath);
+      stream.on('data', line => {
+        streams[file].write(line);
+      });
+      await new Promise((accept, reject) => {
+        stream.on('end', accept);
+        stream.on('error', reject);
+      });
+    }
+    built++;
+    if (built % 10000 === 0) {
+      console.log(`Totals: building ${built} / ${available.length}...`);
+    }
+  }
+  for (const file of filenames) {
+    await streams[file].endAsync();
+  }
+  console.log(`Totals: built ${built}.`);
+}
+
+async function pack() {
+  // TODO: lzop things
 }
 
 async function run() {
   await partials();
   await totals();
+  await pack();
 }
 
 module.exports = {
