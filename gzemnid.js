@@ -1,3 +1,3 @@
 'use strict';
 
-require('./build/cli');
+require('./build/gzemnid');
