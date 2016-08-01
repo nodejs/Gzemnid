@@ -10,23 +10,14 @@ const {
 
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'current/'));
-  await mkdirpAsync(path.join(config.dir, 'current.ex/'));
 
   const broken = toSet(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
   const blacklist = toSet(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
-  const current_ex = await fs.readdirAsync(path.join(config.dir, 'current.ex/'));
   const map = toMap(current);
-  const map_ex = toMap(current_ex);
-
-  if (current.join(',') !== current_ex.join(',')) {
-    console.log('Warning: current and current.ex are not synced!');
-  }
 
   const out = {
-    mv_ex: fs.createWriteStream(path.join(config.dir, 'update.mv.ex.txt')),
     mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
-    rm_ex: fs.createWriteStream(path.join(config.dir, 'update.rm.ex.txt')),
     rm: fs.createWriteStream(path.join(config.dir, 'update.rm.txt')),
     download: fs.createWriteStream(path.join(config.dir, 'update.download.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
@@ -63,7 +54,6 @@ async function run() {
     }
 
     map.set(file, true);
-    map_ex.set(file, true);
     count++;
     if (count % 10000 === 0) {
       console.log(`${count}...`);
@@ -79,12 +69,6 @@ async function run() {
         out.mv.write(`mv "${file}" ../outdated/\n`);
         out.rm.write(`rm "${file}" ../outdated/\n`);
         moved++;
-      }
-    });
-    map_ex.forEach((status, file) => {
-      if (status === false) {
-        out.mv_ex.write(`mv "${file}" ../outdated.ex/\n`);
-        out.rm_ex.write(`rm -rf "${file}" ../outdated.ex/\n`);
       }
     });
     console.log(`Moved: ${moved}.`);
