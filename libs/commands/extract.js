@@ -58,7 +58,8 @@ async function partials() {
   await child_process.execFileAsync('rm', ['-rf', tmp]);
   await mkdirpAsync(tmp);
   let built = 0;
-  const total = current.size - present.size + removed;
+  let errors = 0;
+  const total = currentSet.size - presentSet.size + removed;
   for (const tgz of current) {
     if (presentSet.has(tgz)) continue;
     console.log(`Partial: building ${tgz}`);
@@ -66,13 +67,15 @@ async function partials() {
       await partial(tgz);
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
+      errors++;
+      continue;
     }
     built++;
     if (built % 10000 === 0) {
-      console.log(`Partials: building ${built} / ${total}...`);
+      console.log(`Partials: building ${built} / ${total - errors}...`);
     }
   }
-  console.log(`Partials: built ${built}.`);
+  console.log(`Partials: built ${built}, errors: ${errors}.`);
   await child_process.execFileAsync('rm', ['-rf', tmp]);
 }
 
