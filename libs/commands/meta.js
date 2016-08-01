@@ -30,7 +30,7 @@ async function run() {
     const url = `https://registry.npmjs.org/${info.name}`;
     const file = `${info.id}.json`;
     if (!map.has(file)) {
-      out.download.write(`${file}\n`);
+      out.download.write(`wget -nc ${url} -O ${file}\n`);
       out.wget.write(`wget -nc ${url} -O ${file}\n`);
       updated++;
     }
