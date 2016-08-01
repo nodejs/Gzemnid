@@ -5,10 +5,12 @@ const bhttp = require('bhttp');
 const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
+const { mkdirpAsync } = require('../helpers');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
 async function run() {
+  await mkdirpAsync(config.dir);
   const source = await bhttp.get(registryUrl, {
     stream: true,
     headers: {

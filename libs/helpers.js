@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
+const mkdirpAsync = Promise.promisify(require('mkdirp'));
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
@@ -57,6 +58,7 @@ async function read(file, type = '$*') {
 }
 
 module.exports = {
+  mkdirpAsync,
   toMap,
   toSet,
   readlines,
