@@ -62,7 +62,11 @@ async function partials() {
   for (const tgz of current) {
     if (presentSet.has(tgz)) continue;
     console.log(`Partial: building ${tgz}`);
-    await partial(tgz);
+    try {
+      await partial(tgz);
+    } catch (e) {
+      console.error(`Partial: failed ${tgz}: ${e}`);
+    }
     built++;
     if (built % 10000 === 0) {
       console.log(`Partials: building ${built} / ${total}...`);
@@ -75,16 +79,18 @@ async function partials() {
 async function partial(tgz) {
   const file = path.join(config.dir, 'current/', tgz);
   const outdir = path.join(config.dir, 'partials/', tgz);
-  await mkdirpAsync(outdir);
   const tar = await child_process.execFileAsync(
     'tar',
     ['--list', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
-  const files = tar.split('\n')
+  const lines = tar.split('\n')
                    .filter(x => !!x)
-                   .sort()
-                   .map(x => x.replace(/[^\/]*\//, ''));
+                   .sort();
+  if (!lines.every(x => x.indexOf('/') !== -1)) {
+    throw new Error('Package contains top-level files!');
+  }
+  const files = lines.map(x => x.replace(/[^\/]*\//, ''));
   await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
   for (const ext of extensions) {
     await fs.writeFileAsync(
@@ -92,6 +98,8 @@ async function partial(tgz) {
       files.filter(entry => entry.endsWith(ext)).join('\n')
     );
   }
+
+  await mkdirpAsync(outdir);
 
   const excluded = await loadExcluded();
   const slim = files.filter(entry => !excluded.some(rexp => rexp.test(entry)));
