@@ -8,6 +8,7 @@ const commands = {
   meta: require('./commands/meta'),
   depsdb: require('./commands/depsdb'),
   stats: require('./commands/stats'),
+  extract: require('./commands/extract'),
   update: require('./commands/update')
 };
 

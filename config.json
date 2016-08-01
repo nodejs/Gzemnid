@@ -5,6 +5,9 @@
     "port": 3000,
     "tokens": {}
   },
+  "extract": {
+    "native": false
+  },
   "code": {
     "path": "./pool/slim",
     "uid": 0,
