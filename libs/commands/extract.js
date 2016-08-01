@@ -90,6 +90,9 @@ async function partial(tgz) {
   if (!lines.every(x => x.indexOf('/') !== -1)) {
     throw new Error('Package contains top-level files!');
   }
+
+  await mkdirpAsync(outdir);
+
   const files = lines.map(x => x.replace(/[^\/]*\//, ''));
   await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
   for (const ext of extensions) {
@@ -98,8 +101,6 @@ async function partial(tgz) {
       files.filter(entry => entry.endsWith(ext)).join('\n')
     );
   }
-
-  await mkdirpAsync(outdir);
 
   const excluded = await loadExcluded();
   const slim = files.filter(entry => !excluded.some(rexp => rexp.test(entry)));
