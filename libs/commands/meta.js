@@ -13,6 +13,7 @@ async function run() {
   const out = {
     mv: fs.createWriteStream(path.join(config.dir, 'meta.mv.txt')),
     rm: fs.createWriteStream(path.join(config.dir, 'meta.rm.txt')),
+    download: fs.createWriteStream(path.join(config.dir, 'meta.download.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'meta.wget.txt'))
   };
 
@@ -28,6 +29,7 @@ async function run() {
     const url = `https://registry.npmjs.org/${info.name}`;
     const file = `${info.id}.json`;
     if (!map.has(file)) {
+      out.download.write(`wget -nc ${url} -O ${file}\n`);
       out.wget.write(`wget -nc ${url} -O ${file}\n`);
       updated++;
     }
