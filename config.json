@@ -1,14 +1,14 @@
 {
-	"useragent": "Gzemnid https://github.com/ChALkeR/Gzemnid",
-	"dir": "./pool",
-	"api": {
-		"port": 3000,
-		"tokens": {}
-	},
-	"code": {
-		"path": "./pool/slim",
-		"uid": 0,
-		"gid": 0,
-		"extensions": ["coffee", "ts", "js"]
-	}
+  "useragent": "Gzemnid https://github.com/ChALkeR/Gzemnid",
+  "dir": "./pool",
+  "api": {
+    "port": 3000,
+    "tokens": {}
+  },
+  "code": {
+    "path": "./pool/slim",
+    "uid": 0,
+    "gid": 0,
+    "extensions": ["coffee", "ts", "js"]
+  }
 }
