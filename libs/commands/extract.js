@@ -20,17 +20,25 @@ async function loadExcluded() {
   excludedLoaded = lines
     .filter(x => !!x)
     .map(x => {
+      let fixFront = false;
+      let fixTail = false;
       if (x[0] === '*') {
         x = x.slice(1);
       } else if (x[0] !== '/') {
-        x = '[^/]' + x;
+        fixFront = true;
       }
       if (x[x.length - 1] === '*') {
         x = x.substr(0, x.length - 1);
       } else if (x[x.length - 1] !== '/') {
-        x = x + '[/$]';
+        fixTail = true;
       }
       x = x.replace(/[^\w\s]/g, '\\$&');
+      if (fixFront) {
+        x = `[/^]${x}`;
+      }
+      if (fixTail) {
+        x = `${x}[/$]`;
+      }
       x = x.replace(/\\\*/g, '.*');
       return new RegExp(x);
     });
