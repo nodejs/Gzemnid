@@ -9,8 +9,8 @@ const readline = require('readline');
 const { toSet, mkdirpAsync, readlines } = require('../helpers');
 
 const extensions = [
-  '.ts', '.coffee', '.js',
-  '.php', '.json', '.txt'
+  //'.php', '.json', '.txt',
+  '.ts', '.coffee', '.js'
 ];
 
 let excludedLoaded;
