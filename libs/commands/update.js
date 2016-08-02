@@ -5,14 +5,14 @@ const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const config = require('../config').config;
 const {
-  jsonStream, readlines, toMap, toSet, mkdirpAsync
+  jsonStream, readlines, toMap, mkdirpAsync
 } = require('../helpers');
 
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'current/'));
 
-  const broken = toSet(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
-  const blacklist = toSet(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
+  const broken = new Set(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
+  const blacklist = new Set(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const map = toMap(current);
 

@@ -14,12 +14,6 @@ function toMap(arr, value = false) {
   return map;
 }
 
-function toSet(arr) {
-  const set = new Set();
-  arr.forEach(x => set.add(x));
-  return set;
-}
-
 function readlines(file) {
   return new Promise((accept, reject) => {
     const lines = [];
@@ -60,7 +54,6 @@ async function read(file, type = '$*') {
 module.exports = {
   mkdirpAsync,
   toMap,
-  toSet,
   readlines,
   jsonStream,
   read

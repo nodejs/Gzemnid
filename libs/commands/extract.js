@@ -6,7 +6,7 @@ const path = require('path');
 const config = require('../config').config;
 const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
-const { toSet, mkdirpAsync, readlines } = require('../helpers');
+const { mkdirpAsync, readlines } = require('../helpers');
 
 const extensions = [
   //'.php', '.json', '.txt',
@@ -49,8 +49,8 @@ async function partials() {
   await mkdirpAsync(path.join(config.dir, 'partials/'));
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
-  const currentSet = toSet(current);
-  const presentSet = toSet(present);
+  const currentSet = new Set(current);
+  const presentSet = new Set(present);
   let removed = 0;
   for (const tgz of present) {
     if (currentSet.has(tgz)) continue;
