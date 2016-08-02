@@ -104,7 +104,8 @@ async function partial(tgz) {
 
   await mkdirpAsync(outdir);
 
-  const files = lines.map(x => x.replace(/[^\/]*\//, ''));
+  const files = lines.map(x => x.replace(/[^\/]*\//, ''))
+                     .map(x => `${tgz}/${x}`);
   await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
   for (const ext of extensions) {
     await fs.writeFileAsync(
@@ -146,7 +147,7 @@ async function partial(tgz) {
     if (config.extract.native) {
       await slimbuildNative(tmp, ext, outdir, tgz);
     } else {
-      await slimbuildJs(tmp, ext, outdir, tgz, slim);
+      await slimbuildJs(ext, outdir, tgz, slim);
     }
   }
   await child_process.execFileAsync('rm', ['-rf', tmp]);
@@ -162,13 +163,13 @@ async function slimbuildNative(dir, ext, outdir, tgz) {
   });
 }
 
-async function slimbuildJs(dir, ext, outdir, tgz, slim) {
+async function slimbuildJs(ext, outdir, tgz, slim) {
   const outfile = path.join(outdir, `slim.code${ext}.txt`);
   const out = fs.createWriteStream(outfile);
   const entries = slim.filter(entry => entry.endsWith(ext));
   for (const entry of entries) {
     await new Promise((accept, reject) => {
-      const stream = fs.createReadStream(path.join(dir, entry));
+      const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
       let num = 0;
       readline.createInterface({
         input: stream
@@ -176,7 +177,7 @@ async function slimbuildJs(dir, ext, outdir, tgz, slim) {
         num++;
         if (line.length > 500) return;
         if (!/[^\s]/.test(line)) return;
-        out.write(`${tgz}/${entry}:${num}:${line}\n`);
+        out.write(`${entry}:${num}:${line}\n`);
       });
       stream
         .on('end', () => accept())
@@ -204,10 +205,10 @@ async function totals() {
   available.sort();
   console.log(`Partials: ${available.length}.`);
 
-  const filenames = []; //['files.txt', 'slim.files.txt'];
+  const filenames = ['files.txt', 'slim.files.txt'];
   for (const ext of extensions) {
-    //filenames.push(`files${ext}.txt`);
-    //filenames.push(`slim.files${ext}.txt`);
+    filenames.push(`files${ext}.txt`);
+    filenames.push(`slim.files${ext}.txt`);
     filenames.push(`slim.code${ext}.txt`);
   }
   const streams = {};
