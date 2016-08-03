@@ -37,7 +37,7 @@ async function loadExcluded() {
         x = `[/^]${x}`;
       }
       if (fixTail) {
-        x = `${x}[/$]`;
+        x = `${x}(/|$)`;
       }
       x = x.replace(/\\\*/g, '.*');
       return new RegExp(x);
