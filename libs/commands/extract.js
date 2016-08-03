@@ -6,7 +6,7 @@ const path = require('path');
 const config = require('../config').config;
 const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
-const { mkdirpAsync, readlines } = require('../helpers');
+const { mkdirpAsync, readlines, rmrfAsync } = require('../helpers');
 
 const extensions = [
   //'.php', '.json', '.txt',
@@ -56,7 +56,7 @@ async function partials() {
   for (const tgz of present) {
     if (currentSet.has(tgz)) continue;
     const dir = path.join(config.dir, 'partials', tgz);
-    await child_process.execFileAsync('rm', ['-rf', dir]);
+    await rmrfAsync(dir);
     removed++;
     if (removed % 10000 === 0) {
       console.log(`Partials: removing ${removed}...`);
@@ -64,7 +64,7 @@ async function partials() {
   }
   console.log(`Partials: removed ${removed}.`);
   const tmp = path.join(config.dir, 'tmp/');
-  await child_process.execFileAsync('rm', ['-rf', tmp]);
+  await rmrfAsync(tmp);
   await mkdirpAsync(tmp);
   let built = 0;
   let errors = 0;
@@ -77,8 +77,8 @@ async function partials() {
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
       errors++;
-      await child_process.execFileAsync('rm', ['-rf', path.join(config.dir, 'partials/', tgz)]);
-      await child_process.execFileAsync('rm', ['-rf', path.join(config.dir, 'tmp/', tgz)]);
+      await rmrfAsync(path.join(config.dir, 'partials/', tgz));
+      await rmrfAsync(path.join(config.dir, 'tmp/', tgz));
       continue;
     }
     built++;
@@ -87,7 +87,7 @@ async function partials() {
     }
   }
   console.log(`Partials: built ${built}, errors: ${errors}.`);
-  await child_process.execFileAsync('rm', ['-rf', tmp]);
+  await rmrfAsync(tmp);
 }
 
 async function partial(tgz) {
@@ -153,7 +153,7 @@ async function partial(tgz) {
       await slimbuildJs(ext, outdir, tgz, slim);
     }
   }
-  await child_process.execFileAsync('rm', ['-rf', tmp]);
+  await rmrfAsync(tmp);
 }
 
 let slimsh;
@@ -192,7 +192,7 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
 
 async function totals() {
   const outdir = path.join(config.dir, 'out/');
-  await child_process.execFileAsync('rm', ['-rf', outdir]);
+  await rmrfAsync(outdir);
   await mkdirpAsync(outdir);
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   current.sort();

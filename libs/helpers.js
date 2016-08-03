@@ -2,11 +2,16 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
+const child_process = Promise.promisifyAll(require('child_process'));
 const mkdirpAsync = Promise.promisify(require('mkdirp'));
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('./config').config;
+
+async function rmrfAsync(dir) {
+    await child_process.execFileAsync('rm', ['-rf', dir]);
+}
 
 function toMap(arr, value = false) {
   const map = new Map();
@@ -53,6 +58,7 @@ async function read(file, type = '$*') {
 
 module.exports = {
   mkdirpAsync,
+  rmrfAsync,
   toMap,
   readlines,
   jsonStream,
