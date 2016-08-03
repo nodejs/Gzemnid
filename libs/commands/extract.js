@@ -46,7 +46,11 @@ async function loadExcluded() {
     return excludedLoaded;
 }
 
-async function partials() {
+async function partials(subcommand) {
+  if (subcommand && subcommand !== 'rebuild') {
+    throw new Error(`Partials: unexpected command: ${subcommand}`);
+  }
+  const rebuild = subcommand === 'rebuild';
   await mkdirpAsync(path.join(config.dir, 'partials/'));
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
@@ -70,10 +74,10 @@ async function partials() {
   let errors = 0;
   const total = currentSet.size - presentSet.size + removed;
   for (const tgz of current) {
-    if (presentSet.has(tgz)) continue;
+    if (!rebuild && presentSet.has(tgz)) continue;
     console.log(`Partial: building ${tgz}`);
     try {
-      await partial(tgz);
+      await partial(tgz, rebuild);
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
       errors++;
@@ -90,31 +94,48 @@ async function partials() {
   await rmrfAsync(tmp);
 }
 
-async function partial(tgz) {
-  const file = path.join(config.dir, 'current/', tgz);
-  const outdir = path.join(config.dir, 'partials/', tgz);
+async function listTar(file) {
   const tar = await child_process.execFileAsync(
     'tar',
     ['--list', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
-  const lines = tar.split('\n')
-                   .filter(x => !!x)
-                   .sort();
-  if (!lines.every(x => x.indexOf('/') !== -1)) {
-    throw new Error('Package contains top-level files!');
+  return tar.split('\n')
+            .filter(x => !!x)
+            .sort();
+}
+
+async function partial(tgz, rebuild) {
+  const file = path.join(config.dir, 'current/', tgz);
+  const outdir = path.join(config.dir, 'partials/', tgz);
+
+  let files;
+
+  if (rebuild) {
+    try {
+      files = await readlines(path.join(outdir, 'files.txt'));
+    } catch (e) {
+      // Just fall back to reading the tar
+    }
   }
 
   await mkdirpAsync(outdir);
 
-  const files = lines.map(x => x.replace(/[^\/]*\//, ''))
-                     .map(x => `${tgz}/${x}`);
-  await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
-  for (const ext of extensions) {
-    await fs.writeFileAsync(
-      path.join(outdir, `files${ext}.txt`),
-      files.filter(entry => entry.endsWith(ext)).join('\n')
-    );
+  if (!files) {
+    const lines = await listTar(file);
+    if (!lines.every(x => x.indexOf('/') !== -1)) {
+      throw new Error('Package contains top-level files!');
+    }
+    files = lines.map(x => x.replace(/[^\/]*\//, ''))
+                 .map(x => `${tgz}/${x}`);
+    await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
+    // TODO: rebuild new extensions on extensions list changes
+    for (const ext of extensions) {
+      await fs.writeFileAsync(
+        path.join(outdir, `files${ext}.txt`),
+        files.filter(entry => entry.endsWith(ext)).join('\n')
+      );
+    }
   }
 
   const excluded = await loadExcluded();
