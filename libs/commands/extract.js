@@ -76,6 +76,8 @@ async function partials() {
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
       errors++;
+      await child_process.execFileAsync('rm', ['-rf', path.join(config.dir, 'partials/', tgz)]);
+      await child_process.execFileAsync('rm', ['-rf', path.join(config.dir, 'tmp/', tgz)]);
       continue;
     }
     built++;
