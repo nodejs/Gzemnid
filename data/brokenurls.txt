@@ -71,6 +71,7 @@ https://registry.npmjs.org/microkern/-/microkern-0.0.2.tgz
 https://registry.npmjs.org/mongo-sess/-/mongo-sess-0.1.0.tgz
 https://registry.npmjs.org/mouram/-/mouram-0.0.0.tgz
 https://registry.npmjs.org/mtime/-/mtime-0.2.0.tgz
+https://registry.npmjs.org/n-pubsub/-/n-pubsub-1.0.0.tgz
 https://registry.npmjs.org/napat-github-example/-/napat-github-example-0.0.0.tgz
 https://registry.npmjs.org/napat/-/napat-0.0.0.tgz
 https://registry.npmjs.org/neo4j-stream-deserializer/-/neo4j-stream-deserializer-0.0.1.tgz
@@ -138,5 +139,6 @@ https://registry.npmjs.org/vehicle-machr/-/vehicle-machr-0.1.0.tgz
 https://registry.npmjs.org/vouch/-/vouch-0.2.0.tgz
 https://registry.npmjs.org/wanna/-/wanna-0.1.1.tgz
 https://registry.npmjs.org/winston-logio/-/winston-logio-0.3.0.tgz
+https://registry.npmjs.org/x-core/-/x-core-0.0.2.tgz
 https://registry.npmjs.org/xupeimodule/-/xupeimodule-0.0.1.tgz
 https://registry.npmjs.org/yae/-/yae-0.0.1.tgz
