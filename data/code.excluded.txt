@@ -7,13 +7,16 @@ _node_modules
 bower_components
 jspm_packages
 build
+Build
 dist
 assets
+locales
 data
 www
 webroot
 website
 htdocs
+gh-pages
 deps
 docs
 doc
@@ -23,6 +26,7 @@ third-party
 3rd-party
 Frameworks
 *.framework
+client/packages
 resources
 vendor
 vendors
@@ -48,16 +52,26 @@ codemirror
 CodeMirror3
 typescript
 goog
+libs/bcv
+
 *.min.js
 *-min.js
 *.pack.js
+*.packed.js
 bundle.js
+*.bundle.js
 *-bundle.js
 *.d.ts
 segment_*ts
 
 ace-editor
 ace-builds
+scripts/libs/ace
+components/AngularJS
+components/angular-*
+components/moment
+components/ng-*
+
 src-min
 src-noconflict
 src-min-noconflict
@@ -69,6 +83,7 @@ jquery.*.js
 jquery-*.js
 texlive.js
 pdftex.js
+th_en_US_new.js
 
 *~
 *.bak
@@ -80,9 +95,14 @@ temp
 ._.DS_Store
 .idea
 .c9
+.publish
 *.log
 logs
 
+multi-typescript-*.tgz
+punycode2-*.tgz/test/data.js
+twitter_cldr-*.tgz/full
 unicode-?.?.?-*.tgz
+wast-spec-*.tgz/slides
 
 node_modules_prev
