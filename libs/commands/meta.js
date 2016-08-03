@@ -22,7 +22,7 @@ async function run() {
   const stream = jsonStream('byField.info.json');
   stream.on('data', info => {
     if (!info.tar) {
-      console.log(info.id + ': no tar!');
+      console.log(`${info.id}: no tar!`);
       return;
     }
 

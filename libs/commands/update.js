@@ -28,14 +28,14 @@ async function run() {
   const stream = jsonStream('byField.info.json');
   stream.on('data', info => {
     if (!info.tar) {
-      console.log(info.id + ': no tar!');
+      console.log(`${info.id}: no tar!`);
       return;
     }
 
     const url = info.tar.replace('http://', 'https://').replace('registry.npmjs.org', 'registry.npmjs.com');
-    const file = url.replace('https://registry.npmjs.com/' + info.name + '/-/', '');
+    const file = url.replace(`https://registry.npmjs.com/${info.name}/-/`, '');
 
-    if (file.replace(/[@0v-]/g, '') !== info.id.replace(/[@0v-]/g, '') + '.tgz') {
+    if (file.replace(/[@0v-]/g, '') !== `${info.id.replace(/[@0v-]/g, '')}.tgz`) {
       console.log(`${info.id}: bad tar - ${info.tar}`);
       return;
     }

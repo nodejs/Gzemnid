@@ -43,7 +43,7 @@ async function code(query, languages = null) {
 
   for (const ext of config.code.extensions) {
     if (!languages || languages.indexOf(ext)) {
-      args.push('slim.code.' + ext + '.lzo');
+      args.push(`slim.code.${ext}.lzo`);
     }
   }
 

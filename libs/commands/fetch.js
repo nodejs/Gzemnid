@@ -25,7 +25,7 @@ async function run() {
   let count = 0;
   stream.on('data', data => {
     if (data.id !== data.key || data.id !== data.value.name) {
-      console.log('UNEXPECTED: ' + JSON.stringify({
+      console.log('UNEXPECTED: ', JSON.stringify({
         id: data.id,
         key: data.key,
         'value.name': data.value.name
@@ -35,7 +35,7 @@ async function run() {
     }
     data = data.value;
     const info = {
-      id: data.name + '-' + data.version,
+      id: `${data.name}-${data.version}`,
       name: data.name,
       version: data.version,
       url: data.bugs && data.bugs.url || data.homepage || data.repository && data.repository.url || null,

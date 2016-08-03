@@ -43,7 +43,7 @@ async function loadExcluded() {
            .replace(/\\\?/g, '.');
       return new RegExp(x);
     });
-    return excludedLoaded;
+  return excludedLoaded;
 }
 
 async function partials(subcommand) {
