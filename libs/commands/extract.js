@@ -34,7 +34,7 @@ async function loadExcluded() {
       }
       x = x.replace(/[^\w\s]/g, '\\$&');
       if (fixFront) {
-        x = `[/^]${x}`;
+        x = `(/|^)${x}`;
       }
       if (fixTail) {
         x = `${x}(/|$)`;
