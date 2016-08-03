@@ -24,6 +24,8 @@ gulp.task('libs', () =>
 gulp.task('lint', () =>
   gulp.src(files.js)
     .pipe(eslint())
+    .pipe(eslint.formatEach('compact', process.stderr))
+    .pipe(eslint.failAfterError())
 );
 
 gulp.task('build', ['libs']);
