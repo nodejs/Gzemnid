@@ -1,13 +1,15 @@
 https://registry.npmjs.org/0.0.1/-/0.0.1-1.0.1.tgz
 https://registry.npmjs.org/1.0.1/-/1.0.1-1.0.0.tgz
 https://registry.npmjs.org/1.0.2/-/1.0.2-1.0.0.tgz
+https://registry.npmjs.org/Duckface/-/Duckface-1.0.0.tgz
+https://registry.npmjs.org/RemoteTestService/-/RemoteTestService-0.0.1.tgz
 https://registry.npmjs.org/apln/-/apln-0.2.1.tgz
 https://registry.npmjs.org/azure-table-mapper/-/azure-table-mapper-0.1.2.tgz
 https://registry.npmjs.org/backapp/-/backapp-0.0.1.tgz
 https://registry.npmjs.org/backbone.collection.database/-/backbone.collection.database-0.0.0.tgz
 https://registry.npmjs.org/basket/-/basket-0.1.1.tgz
-https://registry.npmjs.org/buildfirst/-/buildfirst-0.1.0.tgz
 https://registry.npmjs.org/buildfirst-ci-by-example/-/buildfirst-ci-by-example-0.1.0.tgz
+https://registry.npmjs.org/buildfirst/-/buildfirst-0.1.0.tgz
 https://registry.npmjs.org/buttress/-/buttress-0.0.8.tgz
 https://registry.npmjs.org/caf_helloworld/-/caf_helloworld-0.0.1.tgz
 https://registry.npmjs.org/canvasui/-/canvasui-0.0.1.tgz
@@ -26,7 +28,6 @@ https://registry.npmjs.org/date-delta/-/date-delta-0.0.3.tgz
 https://registry.npmjs.org/dcombo-cli/-/dcombo-cli-0.1.0.tgz
 https://registry.npmjs.org/doku-markdown/-/doku-markdown-0.0.2.tgz
 https://registry.npmjs.org/domhis/-/domhis-0.0.1.tgz
-https://registry.npmjs.org/Duckface/-/Duckface-1.0.0.tgz
 https://registry.npmjs.org/dustmotes-layout/-/dustmotes-layout-0.1.0.tgz
 https://registry.npmjs.org/fekitvm/-/fekitvm-0.2.52.tgz
 https://registry.npmjs.org/flod-webservers/-/flod-webservers-0.0.3-2.tgz
@@ -70,8 +71,8 @@ https://registry.npmjs.org/microkern/-/microkern-0.0.2.tgz
 https://registry.npmjs.org/mongo-sess/-/mongo-sess-0.1.0.tgz
 https://registry.npmjs.org/mouram/-/mouram-0.0.0.tgz
 https://registry.npmjs.org/mtime/-/mtime-0.2.0.tgz
-https://registry.npmjs.org/napat/-/napat-0.0.0.tgz
 https://registry.npmjs.org/napat-github-example/-/napat-github-example-0.0.0.tgz
+https://registry.npmjs.org/napat/-/napat-0.0.0.tgz
 https://registry.npmjs.org/neo4j-stream-deserializer/-/neo4j-stream-deserializer-0.0.1.tgz
 https://registry.npmjs.org/nfl-api/-/nfl-api-1.0.1.tgz
 https://registry.npmjs.org/night-watch/-/night-watch-0.1.0.tgz
@@ -106,7 +107,6 @@ https://registry.npmjs.org/pro.js/-/pro.js-0.4.0.tgz
 https://registry.npmjs.org/procs/-/procs-0.0.5.tgz
 https://registry.npmjs.org/ractive-backbone-tmp/-/ractive-backbone-tmp-0.1.1.tgz
 https://registry.npmjs.org/rapportive/-/rapportive-0.1.2.tgz
-https://registry.npmjs.org/RemoteTestService/-/RemoteTestService-0.0.1.tgz
 https://registry.npmjs.org/remove-markdown-extension/-/remove-markdown-extension-0.0.1.tgz
 https://registry.npmjs.org/request.js/-/request.js-0.0.6.tgz
 https://registry.npmjs.org/requireAsync/-/requireAsync-0.0.2.tgz
