@@ -1,11 +1,14 @@
-public
-static
 node_modules*
 old_node_modules
 _node_modules
 .node_modules
+node_modules_prev
 bower_components
 jspm_packages
+client/packages
+
+public
+static
 build
 Build
 dist
@@ -26,11 +29,21 @@ third-party
 3rd-party
 Frameworks
 *.framework
-client/packages
 resources
 vendor
 vendors
 bundles
+
+*.min.js
+*-min.js
+*.pack.js
+*.packed.js
+bundle.js
+*.bundle.js
+*-bundle.js
+*.d.ts
+segment_*ts
+
 ckeditor
 jquery
 jquery-1*
@@ -52,18 +65,6 @@ codemirror
 CodeMirror3
 typescript
 goog
-libs/bcv
-
-*.min.js
-*-min.js
-*.pack.js
-*.packed.js
-bundle.js
-*.bundle.js
-*-bundle.js
-*.d.ts
-segment_*ts
-
 ace-editor
 ace-builds
 scripts/libs/ace
@@ -71,10 +72,7 @@ components/AngularJS
 components/angular-*
 components/moment
 components/ng-*
-
-src-min
-src-noconflict
-src-min-noconflict
+libs/bcv
 
 bootstrap.js
 ext-all.js
@@ -84,6 +82,10 @@ jquery-*.js
 texlive.js
 pdftex.js
 th_en_US_new.js
+
+src-min
+src-noconflict
+src-min-noconflict
 
 *~
 *.bak
@@ -104,5 +106,3 @@ punycode2-*.tgz/test/data.js
 twitter_cldr-*.tgz/full
 unicode-?.?.?-*.tgz
 wast-spec-*.tgz/slides
-
-node_modules_prev
