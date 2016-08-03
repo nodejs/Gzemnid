@@ -97,7 +97,7 @@ async function partials(subcommand) {
 async function listTar(file) {
   const tar = await child_process.execFileAsync(
     'tar',
-    ['--list', '-f', file],
+    ['--list', '--warning=no-unknown-keyword', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
   return tar.split('\n')
@@ -152,6 +152,7 @@ async function partial(tgz, rebuild) {
   await mkdirpAsync(tmp);
   const args = [
     '--strip-components=1',
+    '--warning=no-unknown-keyword',
     '-xf',
     path.join('..', '..', 'current', tgz),
     '--wildcards'
