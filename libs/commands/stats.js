@@ -23,7 +23,8 @@ function buildMap(data) {
   return map;
 }
 
-// We could use the stream directly, but then we won't receive nice stats beforehand.
+// We could use the stream directly, but then we won't receive nice stats
+// beforehand.
 function getGroups(map) {
   const stream = jsonStream('byField.info.json');
 
@@ -87,7 +88,8 @@ async function run() {
       }
       data[name] = body[name].downloads;
     }
-    console.log(`Processed: ${processed}/${needed}, saved: ${processed + total - needed}/${total}.`);
+    const saved = processed + total - needed;
+    console.log(`Processed: ${processed}/${needed}, saved: ${saved}/${total}.`);
     await fs.writeFileAsync(file, JSON.stringify(data, undefined, 1));
   }
 }

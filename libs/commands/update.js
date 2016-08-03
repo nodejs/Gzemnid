@@ -32,7 +32,8 @@ async function run() {
       return;
     }
 
-    const url = info.tar.replace('http://', 'https://').replace('registry.npmjs.org', 'registry.npmjs.com');
+    const url = info.tar.replace('http://', 'https://')
+                        .replace('registry.npmjs.org', 'registry.npmjs.com');
     const file = url.replace(`https://registry.npmjs.com/${info.name}/-/`, '');
 
     if (file.replace(/[@0v-]/g, '') !== `${info.id.replace(/[@0v-]/g, '')}.tgz`) {
@@ -43,7 +44,8 @@ async function run() {
       //console.log(`${info.id}: known broken url, tar - ${info.tar}`);
       return;
     }
-    if (blacklist.has(file) || blacklist.has(url) || blacklist.has(info.id) || file.endsWith('-0.0.0-reserved.tgz')) {
+    if (blacklist.has(file) || blacklist.has(url) || blacklist.has(info.id) ||
+        file.endsWith('-0.0.0-reserved.tgz')) {
       //console.log(`${info.id}: blacklist hit, tar - ${info.tar}`);
       return;
     }
