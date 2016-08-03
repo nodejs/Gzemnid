@@ -6,7 +6,7 @@ const path = require('path');
 const config = require('../config').config;
 const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
-const { mkdirpAsync, readlines, rmrfAsync } = require('../helpers');
+const { mkdirpAsync, readlines, rmrfAsync, copyAsync } = require('../helpers');
 
 const extensions = [
   //'.php', '.json', '.txt',
@@ -157,6 +157,7 @@ async function partial(tgz, rebuild) {
     path.join('..', '..', 'current', tgz),
     '--wildcards'
   ];
+  args.push('*/package.json');
   for (const ext of extensions) {
     if (slim.some(entry => entry.endsWith(ext))) {
       args.push(`*${ext}`);
@@ -167,6 +168,12 @@ async function partial(tgz, rebuild) {
     stdio: 'ignore',
     maxBuffer: 50 * 1024 * 1024
   });
+
+  // TODO: only if not exists
+  await copyAsync(
+    path.join(tmp, 'package.json'),
+    path.join(outdir, 'package.json')
+  );
 
   for (const ext of extensions) {
     if (config.extract.native) {

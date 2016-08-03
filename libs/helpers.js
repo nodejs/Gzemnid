@@ -10,7 +10,18 @@ const path = require('path');
 const config = require('./config').config;
 
 async function rmrfAsync(dir) {
-    await child_process.execFileAsync('rm', ['-rf', dir]);
+  await child_process.execFileAsync('rm', ['-rf', dir]);
+}
+
+async function copyAsync(inFile, outFile) {
+  await new Promise((accept, reject) => {
+    const input = fs.createReadStream(inFile);
+    input.on('error', reject);
+    const output = fs.createWriteStream(outFile);
+    output.on('error', reject);
+    output.on('finish', accept);
+    input.pipe(output);
+  });
 }
 
 function toMap(arr, value = false) {
@@ -59,6 +70,7 @@ async function read(file, type = '$*') {
 module.exports = {
   mkdirpAsync,
   rmrfAsync,
+  copyAsync,
   toMap,
   readlines,
   jsonStream,
