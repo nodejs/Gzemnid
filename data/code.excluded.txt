@@ -83,6 +83,6 @@ temp
 *.log
 logs
 
-unicode-*-0.1.5.tgz
+unicode-?.?.?-*.tgz
 
 node_modules_prev
