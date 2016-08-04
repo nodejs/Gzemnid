@@ -9,7 +9,7 @@ const commands = {
   depsdb: require('./commands/depsdb'),
   stats: require('./commands/stats'),
   extract: require('./commands/extract'),
-  update: require('./commands/update')
+  packages: require('./commands/packages')
 };
 
 async function main(argv) {
