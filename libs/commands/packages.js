@@ -40,7 +40,8 @@ async function run() {
       console.log(`${info.id}: bad tar - ${info.tar}`);
       return;
     }
-    if (broken.has(url)) {
+    if (broken.has(url) ||
+        broken.has(url.replace('registry.npmjs.com/', 'registry.npmjs.org/'))) {
       //console.log(`${info.id}: known broken url, tar - ${info.tar}`);
       return;
     }
