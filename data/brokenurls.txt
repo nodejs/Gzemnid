@@ -119,7 +119,9 @@ https://registry.npmjs.org/screenshooter/-/screenshooter-0.2.1.tgz
 https://registry.npmjs.org/somepackage-dev/-/somepackage-dev-0.0.0.tgz
 https://registry.npmjs.org/sshfs/-/sshfs-0.0.1.tgz
 https://registry.npmjs.org/state_lite.js/-/state_lite.js-0.1.1.tgz
+https://registry.npmjs.org/store-in-fs/-/store-in-fs-1.0.0.tgz
 https://registry.npmjs.org/superUsingMod/-/superUsingMod-1.0.0.tgz
+https://registry.npmjs.org/svgload/-/svgload-1.0.0.tgz
 https://registry.npmjs.org/swk-valid/-/swk-valid-0.0.1.tgz
 https://registry.npmjs.org/tagr-json-to-html/-/tagr-json-to-html-0.0.6.tgz
 https://registry.npmjs.org/temp-testing-project/-/temp-testing-project-0.0.4.tgz
