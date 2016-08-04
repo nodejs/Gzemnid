@@ -82,6 +82,8 @@ jquery-*.js
 texlive.js
 pdftex.js
 th_en_US_new.js
+scala-node-main-extdeps.js
+fhir-tests.ts
 
 src-min
 src-noconflict
@@ -101,6 +103,8 @@ temp
 *.log
 logs
 
+cesium-?.*.tgz/Source
+fishtones-?.*.tgz/test/mocks
 multi-typescript-*.tgz
 punycode2-*.tgz/test/data.js
 twitter_cldr-*.tgz/full
