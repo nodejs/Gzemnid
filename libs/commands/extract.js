@@ -46,7 +46,7 @@ async function loadExcluded() {
   return excludedLoaded;
 }
 
-async function partials(subcommand) {
+async function partials(subcommand, single) {
   if (subcommand && subcommand !== 'rebuild') {
     throw new Error(`Partials: unexpected command: ${subcommand}`);
   }
@@ -58,6 +58,7 @@ async function partials(subcommand) {
   const presentSet = new Set(present);
   let removed = 0;
   for (const tgz of present) {
+    if (single && tgz !== single) continue;
     if (currentSet.has(tgz)) continue;
     const dir = path.join(config.dir, 'partials', tgz);
     await rmrfAsync(dir);
@@ -74,6 +75,7 @@ async function partials(subcommand) {
   let errors = 0;
   const total = currentSet.size - presentSet.size + removed;
   for (const tgz of current) {
+    if (single && tgz !== single) continue;
     if (!rebuild && presentSet.has(tgz)) continue;
     console.log(`Partial: building ${tgz}`);
     try {
