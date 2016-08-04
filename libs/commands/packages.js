@@ -69,7 +69,7 @@ async function run() {
     map.forEach((status, file) => {
       if (status === false) {
         out.mv.write(`mv "${file}" ../outdated/\n`);
-        out.rm.write(`rm "${file}" ../outdated/\n`);
+        out.rm.write(`rm "${file}"\n`);
         moved++;
       }
     });
