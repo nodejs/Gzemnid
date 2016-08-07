@@ -137,12 +137,14 @@ async function nested() {
   const build = (name, version, depth = 0) => {
     if (!version)
       return [];
+    const key = [name, version].join('@');
     const versions = data[name];
+    if (!versions || !versions[version])
+      return [key, '?'];
     const deps = versions[version];
     if (Array.isArray(deps))
       return deps;
     versions[version] = []; // Recursive protection
-    const key = [name, version].join('@');
     let normal = [key];
     for (const dep in deps) {
       normal = normal.concat(build(dep, deps[dep], depth + 1));
