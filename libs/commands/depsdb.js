@@ -166,10 +166,12 @@ async function nested() {
   for (const name in data) {
     const version = data[name]._latest;
     const deps = await build(name, version);
-    await out.writeAsync(`${JSON.stringify(name)}: ${JSON.stringify(deps)},\n`);
+    if (count > 0)
+      out.write(',\n');
+    await out.writeAsync(`${JSON.stringify(name)}: ${JSON.stringify(deps)}`);
     if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
   }
-  out.write('}\n');
+  out.write('\n}\n');
   await out.endAsync();
   console.log('Dump complete');
 }
