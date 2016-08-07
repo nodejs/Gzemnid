@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "JSONStream": "^1.0.6",
+    "JSONStream": "^1.1.4",
     "bhttp": "^1.2.1",
     "bluebird": "^3.4.0",
     "koa": "^2.0.0",
