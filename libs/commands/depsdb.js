@@ -88,8 +88,11 @@ async function resolved() {
         continue;
       }
       const depVersion = matchVersion(dep, deps[dep]);
+      if (!depVersion) {
+        deps[dep] = ` ${deps[dep]}`;
+        continue;
+      }
       deps[dep] = depVersion;
-      if (!depVersion) continue;
       normalize(dep, depVersion);
     }
   };
