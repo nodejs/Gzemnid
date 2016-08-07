@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const config = require('../config').config;
 const semver = require('semver');
-const { read } = require('../helpers');
+const { read, jsonStream } = require('../helpers');
 
 async function plain() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
@@ -176,6 +176,25 @@ async function nested() {
   console.log('Dump complete');
 }
 
+async function stats() {
+  const info = await read('stats.json');
+
+  const out = fs.createWriteStream(path.join(config.dir, 'deps-nested.txt'));
+
+  let count = 0;
+  const stream = jsonStream('deps-nested.json', '$*');
+  stream.on('data', row => {
+    const weight = info[row.key] || '?';
+    out.writeAsync(`${weight}\t${row.key}: ${JSON.stringify(row.value)}\n`);
+    if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
+  });
+
+  await stream.promise;
+
+  console.log(`Total: ${count}.`);
+  await out.endAsync();
+}
+
 async function run() {
   await plain();
   await resolved();
@@ -186,5 +205,6 @@ module.exports = {
   plain,
   resolved,
   nested,
+  stats,
   run
 };
