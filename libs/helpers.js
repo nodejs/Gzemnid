@@ -49,7 +49,12 @@ function readlines(file) {
 
 function jsonStream(file, type = '*') {
   const resolved = path.join(config.dir, file);
-  return fs.createReadStream(resolved).pipe(JSONStream.parse(type));
+  const deferred = Promise.pending();
+  const stream = fs.createReadStream(resolved).pipe(JSONStream.parse(type));
+  stream.once('end', () => deferred.resolve());
+  stream.once('error', e => deferred.reject(e));
+  stream.promise = deferred.promise;
+  return stream;
 }
 
 async function read(file, type = '$*') {
@@ -60,9 +65,7 @@ async function read(file, type = '$*') {
     data[obj.key] = obj.value;
     if (++count % 10000 === 0) console.log(`Read ${count}...`);
   });
-  await new Promise(accept => {
-    stream.once('end', accept);
-  });
+  await stream.promise;
   console.log('Read complete');
   return data;
 }

@@ -25,10 +25,9 @@ function buildMap(data) {
 
 // We could use the stream directly, but then we won't receive nice stats
 // beforehand.
-function getGroups(map) {
+async function getGroups(map) {
   const stream = jsonStream('byField.info.json');
 
-  const deferred = Promise.pending();
   const groups = [];
   let group = [];
   let groupLength = -1;
@@ -52,13 +51,12 @@ function getGroups(map) {
     group.push(name);
     map.set(name, true);
   });
-  stream.on('end', () => {
-    groups.push(group);
-    deferred.resolve({ groups, total, needed });
-    console.log(`Total: ${total}, neededed: ${needed}.`);
-  });
 
-  return deferred.promise;
+  await stream.promise;
+
+  groups.push(group);
+  console.log(`Total: ${total}, neededed: ${needed}.`);
+  return { groups, total, needed };
 }
 
 async function run() {

@@ -63,20 +63,20 @@ async function run() {
     }
   });
 
-  stream.on('end', () => {
-    console.log(`Total: ${count}.`);
-    console.log(`New/updated: ${updated}.`);
-    let moved = 0;
-    map.forEach((status, file) => {
-      if (status === false) {
-        out.mv.write(`mv "${file}" ../outdated/\n`);
-        out.rm.write(`rm "${file}"\n`);
-        moved++;
-      }
-    });
-    console.log(`Moved: ${moved}.`);
-    console.log('END');
+  await stream.promise;
+
+  console.log(`Total: ${count}.`);
+  console.log(`New/updated: ${updated}.`);
+  let moved = 0;
+  map.forEach((status, file) => {
+    if (status === false) {
+      out.mv.write(`mv "${file}" ../outdated/\n`);
+      out.rm.write(`rm "${file}"\n`);
+      moved++;
+    }
   });
+  console.log(`Moved: ${moved}.`);
+  console.log('END');
 }
 
 module.exports = {
