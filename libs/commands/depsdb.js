@@ -81,6 +81,10 @@ async function resolved() {
     }
     const deps = info[version];
     for (const dep in deps) {
+      if (deps[dep].indexOf('://') !== -1 ||
+          deps[dep].startsWith('github:')) {
+        continue;
+      }
       const depVersion = matchVersion(dep, deps[dep]);
       deps[dep] = depVersion;
       if (!depVersion) continue;
