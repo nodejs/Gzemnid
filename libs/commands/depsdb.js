@@ -19,9 +19,18 @@ async function plain() {
       out.write(', ');
     }
     out.write(`${JSON.stringify(data.name)}: {\n`);
+    let depsStringPrev;
+    let versionPrev;
     for (const version of Object.keys(data.versions)) {
       const deps = data.versions[version].dependencies || {};
-      out.write(` ${JSON.stringify(version)}: ${JSON.stringify(deps)},\n`);
+      const depsString = JSON.stringify(deps);
+      if (depsString === depsStringPrev) {
+        out.write(` ${JSON.stringify(version)}: ${JSON.stringify(versionPrev)},\n`);
+      } else {
+        out.write(` ${JSON.stringify(version)}: ${depsString},\n`);
+        versionPrev = version;
+        depsStringPrev = depsString;
+      }
     }
     out.write(` "_latest": ${JSON.stringify(data['dist-tags'].latest)}\n`);
     out.write('}');
@@ -47,18 +56,10 @@ async function resolved() {
     if (semver.satisfies(latest, spec))
       return latest;
 
-    let found = false;
     return Object.keys(data[name])
       .filter(key => key[0] !== '_')
-      .sort(semver.compare)
-      .reverse()
-      .filter(version => {
-        if (!found && semver.satisfies(version, spec)) {
-          found = true;
-          return true;
-        }
-        return false;
-      })[0];
+      .sort(semver.rcompare)
+      .find(version => semver.satisfies(version, spec));
   };
 
   const normalized = new Set();
@@ -67,7 +68,11 @@ async function resolved() {
     if (normalized.has(key))
       return;
     normalized.add(key);
-    const deps = data[name][version];
+    const info = data[name];
+    if (typeof info[version] === 'string') {
+      info[version] = info[info[version]];
+    }
+    const deps = info[version];
     for (const dep in deps) {
       const depVersion = matchVersion(dep, deps[dep]);
       deps[dep] = depVersion;
