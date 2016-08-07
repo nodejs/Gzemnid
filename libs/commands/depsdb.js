@@ -24,7 +24,7 @@ async function plain() {
     for (const version of Object.keys(data.versions)) {
       const deps = data.versions[version].dependencies || {};
       const depsString = JSON.stringify(deps);
-      if (depsString === depsStringPrev) {
+      if (depsString === depsStringPrev && depsString !== '{}') {
         out.write(` ${JSON.stringify(version)}: ${JSON.stringify(versionPrev)},\n`);
       } else {
         out.write(` ${JSON.stringify(version)}: ${depsString},\n`);
