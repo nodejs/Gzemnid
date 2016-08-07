@@ -53,7 +53,7 @@ async function resolved() {
       return undefined;
 
     const latest = data[name]._latest;
-    if (spec === 'latest' || semver.satisfies(latest, spec))
+    if (spec === 'latest' || spec === '*' || semver.satisfies(latest, spec))
       return latest;
 
     return Object.keys(data[name])
