@@ -63,14 +63,21 @@ async function resolved() {
   };
 
   const normalized = new Set();
+  const normalizedExtra = new Set();
   const normalize = (name, version) => {
     const key = [name, version].join('-');
     if (normalized.has(key))
       return;
     normalized.add(key);
+    if (normalizedExtra.has(key))
+      return;
     const info = data[name];
     if (typeof info[version] === 'string') {
+      const equivKey = [name, info[version]].join('-');
       info[version] = info[info[version]];
+      if (normalized.has(equivKey) || normalizedExtra.has(equivKey))
+        return;
+      normalizedExtra.add(equivKey);
     }
     const deps = info[version];
     for (const dep in deps) {
