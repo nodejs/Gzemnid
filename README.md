@@ -29,7 +29,9 @@ where `[subcommand]` is optional.
 
 Here is the list of the current commands:
   * `gzemnid fetch` — builds `byField.info.json`.
-  * `gzemnid stats` —
+  * `gzemnid stats` — runs subcommand `rebuild`.
+    * `gzemnid stats rebuild` —
+    * `gzemnid stats update` —
   * `gzemnid meta` —
   * `gzemnid depsdb` — runs subcommands `plain`, `resolved`, `nested`,
     * `gzemnid depsdb plain` —

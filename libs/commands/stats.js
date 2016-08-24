@@ -59,7 +59,7 @@ async function getGroups(map) {
   return { groups, total, needed };
 }
 
-async function run() {
+async function update() {
   const file = path.join(config.dir, 'stats.json');
   const data = await fs.readFileAsync(file)
     .then(JSON.parse)
@@ -92,6 +92,18 @@ async function run() {
   }
 }
 
+async function rebuild() {
+  const file = path.join(config.dir, 'stats.json');
+  await fs.unlinkAsync(file).catch(() => ({}));
+  await update();
+}
+
+async function run() {
+  await rebuild();
+}
+
 module.exports = {
-  run
+  run,
+  rebuild,
+  update
 };
