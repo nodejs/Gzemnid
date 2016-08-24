@@ -12,8 +12,6 @@ async function run() {
   const map = toMap(current);
 
   const out = {
-    mv: fs.createWriteStream(path.join(config.dir, 'meta.mv.txt')),
-    rm: fs.createWriteStream(path.join(config.dir, 'meta.rm.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'meta.wget.txt'))
   };
 
@@ -45,13 +43,17 @@ async function run() {
   console.log(`Total: ${count}.`);
   console.log(`New/updated: ${updated}.`);
   let moved = 0;
-  map.forEach((status, file) => {
-    if (status === false) {
-      out.mv.write(`mv "${file}" ../meta.outdated/\n`);
-      out.rm.write(`rm "${file}"\n`);
-      moved++;
+  for (const [file, keep] of map) {
+    if (keep) continue;
+    if (moved === 0) {
+      await mkdirpAsync(path.join(config.dir, 'meta.old/'));
     }
-  });
+    await fs.renameAsync(
+      path.join(config.dir, 'meta/', file),
+      path.join(config.dir, 'meta.old/', file)
+    );
+    moved++;
+  }
   console.log(`Moved: ${moved}.`);
   console.log('END');
 }
