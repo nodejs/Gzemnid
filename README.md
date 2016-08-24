@@ -1,12 +1,10 @@
 # Gzemnid
 
-*TODO: document things.*
-
 ## Data structures
 
 All data files are stored inside the `./pool/` dir by default.
 
-### `byField.info.json`
+### byField.info.json
 
 A huge JSON with basic metadata for all packages on npm. It is an array of entries, the JSON is formatted to be one entry per line.
 
@@ -24,7 +22,7 @@ Created via `gzemnid fetch`.
 
 ### stats.json
 
-Constains downloads/month stats for all packages. It is an object from package name to downloads count, the JSON is formatted to be one entry per line.
+Contains downloads/month stats for all packages. It is an object from package name to downloads count, the JSON is formatted to be one entry per line.
 
 Example entry:
 ```json
