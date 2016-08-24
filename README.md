@@ -47,6 +47,8 @@ Example content: see <https://registry.npmjs.org/qmlweb>.
 
 _Notice: these files are updated only on `latest` version releases, so they might become stale when it comes to beta releases._
 
+Typical size is about 4 GiB, typical bootstrap time is quite long (could even take a day or two), but further updates are quite fast.
+
 Created via `gzemnid meta`.
 
 Requires: `byField.info.json`.
@@ -61,7 +63,7 @@ Here is the list of the current commands:
   * `gzemnid stats` — runs subcommand `rebuild`.
     * `gzemnid stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in `byField.info.json`.
     * `gzemnid stats update` — updates `stats.json` for only newly added packages, keeping the numbers for already present packages.
-  * `gzemnid meta` —
+  * `gzemnid meta` — builds `meta/` directory, downloading meta info for all packages present in `byField.info.json`.
   * `gzemnid depsdb` — runs subcommands `plain`, `resolved`, `nested`,
     * `gzemnid depsdb plain` —
     * `gzemnid depsdb resolved` —
