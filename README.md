@@ -35,6 +35,20 @@ Created via `gzemnid stats`.
 
 Requires: `byField.info.json`.
 
+### Directory: meta/
+
+Contains files named `${package_name}-${package_version}.json` with more detailed package info obtained from the registry, including dependencies for each published version of the package.
+
+One file per `${package_name}` is stored, only for the `latest` version. The JSON files are not formatted.
+
+Example content: see <https://registry.npmjs.org/qmlweb>.
+
+_Notice: these files are updated only on `latest` version releases, so they might become stale when it comes to beta releases._
+
+Created via `gzemnid meta`.
+
+Requires: `byField.info.json`.
+
 ## Commands
 
 The main script is invoked as `gzemnid command [subcommand]` (or `./gzemnid.js command [subcommand]`),
