@@ -22,6 +22,21 @@ It requires downloading about 500 MiB (not stored) in order to build this file.
 
 Created via `gzemnid fetch`.
 
+### stats.json
+
+Constains downloads/month stats for all packages. It is an object from package name to downloads count, the JSON is formatted to be one entry per line.
+
+Example entry:
+```json
+ "bluebird": 9739667,
+```
+
+Typical size — under 10 MiB.
+
+Created via `gzemnid stats`.
+
+Requires: `byField.info.json`.
+
 ## Commands
 
 The main script is invoked as `gzemnid command [subcommand]` (or `./gzemnid.js command [subcommand]`),
@@ -30,8 +45,8 @@ where `[subcommand]` is optional.
 Here is the list of the current commands:
   * `gzemnid fetch` — builds `byField.info.json`.
   * `gzemnid stats` — runs subcommand `rebuild`.
-    * `gzemnid stats rebuild` —
-    * `gzemnid stats update` —
+    * `gzemnid stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in `byField.info.json`.
+    * `gzemnid stats update` — updates `stats.json` for only newly added packages, keeping the numbers for already present packages.
   * `gzemnid meta` —
   * `gzemnid depsdb` — runs subcommands `plain`, `resolved`, `nested`,
     * `gzemnid depsdb plain` —
