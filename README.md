@@ -55,7 +55,9 @@ Requires: `byField.info.json`.
 
 ### Directory: current/
 
-Contains `latest` versions of all packages.
+Contains `latest` versions of all packages, one file per package.
+
+Files are named `${package_name}-${package_version}.tgz`.
 
 Typical size is currently 80 GiB (and growing), typical bootstrap time depends on your internet connection, further updates are quite fast.
 
