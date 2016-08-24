@@ -85,4 +85,10 @@ Here is the list of the current commands:
   * `gzemnid extract` — runs subcommands `partials`, `totals`,
     * `gzemnid extract partials` —
     * `gzemnid extract totals` —
-  * `gzemnid server` —
+  * `gzemnid server` — starts the web server providing the search API endpoints.
+
+## Server
+
+_TODO: document server._
+
+Started via `gzemnid server`.
