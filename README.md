@@ -53,6 +53,16 @@ Created via `gzemnid meta`.
 
 Requires: `byField.info.json`.
 
+### Directory: current/
+
+Contains `latest` versions of all packages.
+
+Typical size is currently 80 GiB (and growing), typical bootstrap time depends on your internet connection, further updates are quite fast.
+
+Created via `gzemnid packages`.
+
+Requires: `byField.info.json`.
+
 ## Commands
 
 The main script is invoked as `gzemnid command [subcommand]` (or `./gzemnid.js command [subcommand]`),
