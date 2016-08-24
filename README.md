@@ -20,6 +20,8 @@ It requires downloading about 500 MiB (not stored) in order to build this file.
 
 Created via `gzemnid fetch`.
 
+_This file is required by most of the other commands, so updating any data should begin with re-downloading this file._
+
 ### stats.json
 
 Contains downloads/month stats for all packages. It is an object from package name to downloads count, the JSON is formatted to be one entry per line.
