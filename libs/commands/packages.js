@@ -17,8 +17,6 @@ async function run() {
   const map = toMap(current);
 
   const out = {
-    mv: fs.createWriteStream(path.join(config.dir, 'update.mv.txt')),
-    rm: fs.createWriteStream(path.join(config.dir, 'update.rm.txt')),
     download: fs.createWriteStream(path.join(config.dir, 'update.download.txt')),
     wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
   };
@@ -64,18 +62,24 @@ async function run() {
   });
 
   await stream.promise;
-
   console.log(`Total: ${count}.`);
+
   console.log(`New/updated: ${updated}.`);
+
   let moved = 0;
-  map.forEach((status, file) => {
-    if (status === false) {
-      out.mv.write(`mv "${file}" ../outdated/\n`);
-      out.rm.write(`rm "${file}"\n`);
-      moved++;
+  for (const [file, keep] of map) {
+    if (keep) continue;
+    if (moved === 0) {
+      await mkdirpAsync(path.join(config.dir, 'outdated/'));
     }
-  });
+    await fs.renameAsync(
+      path.join(config.dir, 'current/', file),
+      path.join(config.dir, 'outdated/', file)
+    );
+    moved++;
+  }
   console.log(`Moved: ${moved}.`);
+
   console.log('END');
 }
 
