@@ -8,7 +8,8 @@ const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
 const babylon = require('babylon');
 const {
-  mkdirpAsync, readlines, rmrfAsync, copyAsync, promiseEvent, packedOut
+  mkdirpAsync, readlines, rmrfAsync, copyAsync, promiseEvent,
+  packedOut, packedIn
 } = require('../helpers');
 
 const extensions = [
@@ -260,6 +261,46 @@ async function slimAST(ext, outdir, tgz, slim) {
   await promiseEvent(out);
 }
 
+async function totalsAST(available) {
+  console.log('Totals: building AST...');
+  const outdir = path.join(config.dir, 'out/');
+  const filenames = [];
+  for (const ext of ['.js']) {
+    filenames.push(`slim.ast${ext}.json`);
+  }
+  const streams = {};
+  for (const file of filenames) {
+    streams[file] = packedOut(path.join(outdir, file), config.extract.compress);
+    streams[file].write('{');
+  }
+  let built = 0;
+  for (const tgz of available) {
+    const tgzdir = path.join(config.dir, 'partials/', tgz);
+    for (const file of filenames) {
+      const stream = packedIn(path.join(tgzdir, file));
+      readline.createInterface({
+        input: stream
+      }).on('line', line => {
+        if (line === '{' || line === '}') return;
+        streams[file].write(streams[file].length === 1 ? '\n' : ',\n');
+        streams[file].write(line.endsWith(',') ? line.slice(0, -1) : line);
+      });
+      await promiseEvent(stream);
+    }
+    built++;
+    if (built % 10000 === 0) {
+      console.log(`Totals: AST ${built} / ${available.length}...`);
+    }
+  }
+  const promises = [];
+  for (const file of filenames) {
+    streams[file].write('\n}\n');
+    streams[file].end();
+    promises.push(promiseEvent(streams[file]));
+  }
+  await Promise.all(promises);
+}
+
 async function totals() {
   console.log('Totals: cleaning up...');
   const outdir = path.join(config.dir, 'out/');
@@ -317,8 +358,13 @@ async function totals() {
     promises.push(promiseEvent(streams[file]));
   }
   await Promise.all(promises);
+  console.log(`Totals: built ${built} partials.`);
 
-  console.log(`Totals: built ${built}.`);
+  if (config.extract.features.ast) {
+    await totalsAST(available);
+  }
+
+  console.log(`Totals: done!`);
 }
 
 async function run() {

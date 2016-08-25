@@ -81,6 +81,15 @@ function packedOut(file, compress = true) {
   return encoder;
 }
 
+function packedIn(file, compress = true) {
+  const stream = fs.createReadStream(`${file}${compress ? '.lz4' : ''}`);
+  if (!compress) {
+    return stream;
+  }
+  const encoder = lz4.createDecoderStream();
+  return stream.pipe(encoder);
+}
+
 async function read(file, type = '$*') {
   const data = {};
   let count = 0;
@@ -103,5 +112,6 @@ module.exports = {
   promiseEvent,
   jsonStream,
   packedOut,
+  packedIn,
   read
 };
