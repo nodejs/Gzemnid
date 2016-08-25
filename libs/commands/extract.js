@@ -261,9 +261,12 @@ async function slimAST(ext, outdir, tgz, slim) {
 }
 
 async function totals() {
+  console.log('Totals: cleaning up...');
   const outdir = path.join(config.dir, 'out/');
   await rmrfAsync(outdir);
   await mkdirpAsync(outdir);
+
+  console.log('Totals: building packages list...');
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   current.sort();
   const out = fs.createWriteStream(path.join(outdir, 'packages.txt'));
@@ -271,12 +274,12 @@ async function totals() {
     out.write(`${tgz}\n`);
   }
   await out.endAsync();
-  console.log(`Total: ${current.length}.`);
-  console.log('packages.txt complete.');
+  console.log(`Totals: packages.txt complete, ${current.length} packages.`);
 
+  console.log('Totals: processing partials...');
   const available = await fs.readdirAsync(path.join(config.dir, 'partials/'));
   available.sort();
-  console.log(`Partials: ${available.length}.`);
+  console.log(`Totals: found ${available.length} partials.`);
 
   const filenames = ['files.txt', 'slim.files.txt'];
   for (const ext of extensions) {
@@ -314,6 +317,7 @@ async function totals() {
     promises.push(promiseEvent(streams[file]));
   }
   await Promise.all(promises);
+
   console.log(`Totals: built ${built}.`);
 }
 
