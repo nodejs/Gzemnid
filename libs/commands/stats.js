@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const bhttp = require('bhttp');
 const path = require('path');
 const config = require('../config').config;
-const { jsonStream } = require('../helpers');
+const common = require('../common');
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const grouplimit = 8000;
@@ -26,20 +26,13 @@ function buildMap(data) {
 // We could use the stream directly, but then we won't receive nice stats
 // beforehand.
 async function getGroups(map) {
-  const stream = jsonStream('byField.info.json');
-
   const groups = [];
   let group = [];
   let groupLength = -1;
-  let total = 0;
   let needed = 0;
 
-  stream.on('data', info => {
+  const total = await common.listInfo(info => {
     const name = info.name;
-    total++;
-    if (total % 10000 === 0) {
-      console.log(`Reading: ${total}...`);
-    }
     if (map.has(name)) return;
     needed++;
     if (groupLength > 0 && groupLength + 1 + name.length >= grouplimit) {
@@ -52,10 +45,8 @@ async function getGroups(map) {
     map.set(name, true);
   });
 
-  await stream.promise;
-
   groups.push(group);
-  console.log(`Total: ${total}, neededed: ${needed}.`);
+  console.log(`Needed: ${needed}.`);
   return { groups, total, needed };
 }
 

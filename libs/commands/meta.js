@@ -5,7 +5,8 @@ const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const bhttp = require('bhttp');
 const config = require('../config').config;
-const { jsonStream, toMap, mkdirpAsync } = require('../helpers');
+const common = require('../common');
+const { toMap, mkdirpAsync } = require('../helpers');
 
 const session = bhttp.session({
   headers: {
@@ -18,10 +19,8 @@ async function run() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
   const map = toMap(current);
 
-  let count = 0;
-  const stream = jsonStream('byField.info.json');
   const queue = [];
-  stream.on('data', info => {
+  await common.listInfo(info => {
     if (!info.tar) {
       console.log(`${info.id}: no tar!`);
       return;
@@ -34,13 +33,7 @@ async function run() {
     }
 
     map.set(file, true);
-    count++;
-    if (count % 50000 === 0) {
-      console.log(`Checking: ${count}...`);
-    }
   });
-  await stream.promise;
-  console.log(`Total: ${count}.`);
 
   console.log(`To download: ${queue.length}.`);
   let updated = 0;
