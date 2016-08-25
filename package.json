@@ -4,6 +4,7 @@
   "description": "",
   "dependencies": {
     "JSONStream": "^1.1.4",
+    "babylon": "^6.9.1",
     "bhttp": "^1.2.1",
     "bluebird": "^3.4.0",
     "koa": "^2.0.0",

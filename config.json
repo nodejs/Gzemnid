@@ -6,6 +6,9 @@
     "tokens": {}
   },
   "extract": {
+    "features": {
+      "ast": false
+    },
     "native": false
   },
   "code": {

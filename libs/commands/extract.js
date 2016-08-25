@@ -6,6 +6,7 @@ const path = require('path');
 const config = require('../config').config;
 const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
+const babylon = require('babylon');
 const { mkdirpAsync, readlines, rmrfAsync, copyAsync } = require('../helpers');
 
 const extensions = [
@@ -184,6 +185,11 @@ async function partial(tgz, rebuild) {
       await slimbuildJs(ext, outdir, tgz, slim);
     }
   }
+
+  if (config.extract.features.ast) {
+    await slimAST(outdir, tgz, slim);
+  }
+
   await rmrfAsync(tmp);
 }
 
@@ -218,6 +224,36 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
         .on('error', reject);
     });
   }
+  await out.endAsync();
+}
+
+async function slimAST(outdir, tgz, slim) {
+  //console.log(`Building AST for ${tgz}...`);
+  const outfile = path.join(outdir, 'slim.ast.js.json');
+  const out = fs.createWriteStream(outfile);
+  const entries = slim.filter(entry => entry.endsWith('.js'));
+  out.write('{');
+  let count = 0;
+  for (const entry of entries) {
+    const filepath = path.join(config.dir, 'tmp', entry);
+    const code = await fs.readFileAsync(filepath, 'utf-8');
+    let ast;
+    try {
+      ast = babylon.parse(code);
+    } catch (e1) {
+      try {
+        ast = babylon.parse(code, { sourceType: 'module' });
+      } catch (e2) {
+        ast = undefined;
+      }
+    }
+    if (count !== 0) {
+      out.write(',');
+    }
+    out.write(`\n ${JSON.stringify(entry)}: ${JSON.stringify(ast)}`);
+    count++;
+  }
+  out.write('\n}\n');
   await out.endAsync();
 }
 
