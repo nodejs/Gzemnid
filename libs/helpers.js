@@ -7,6 +7,7 @@ const mkdirpAsync = Promise.promisify(require('mkdirp'));
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
+const lz4 = require('lz4');
 const config = require('./config').config;
 
 async function rmrfAsync(dir) {
@@ -68,6 +69,19 @@ function jsonStream(file, type = '*') {
   stream.promise = promiseEvent(stream);
   return stream;
 }
+
+function packedOut(file, compress = true) {
+  const outstream = fs.createWriteStream(`${file}${compress ? '.lz4' : ''}`);
+  if (!compress) {
+    return outstream;
+  }
+  const encoder = lz4.createEncoderStream({
+    highCompression: true
+  });
+  encoder.pipe(outstream);
+  return encoder;
+}
+
 async function read(file, type = '$*') {
   const data = {};
   let count = 0;
@@ -89,5 +103,6 @@ module.exports = {
   readlines,
   promiseEvent,
   jsonStream,
+  packedOut,
   read
 };

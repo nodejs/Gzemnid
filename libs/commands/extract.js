@@ -7,9 +7,8 @@ const config = require('../config').config;
 const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
 const babylon = require('babylon');
-const lz4 = require('lz4');
 const {
-  mkdirpAsync, readlines, rmrfAsync, copyAsync, promiseEvent
+  mkdirpAsync, readlines, rmrfAsync, copyAsync, promiseEvent, packedOut
 } = require('../helpers');
 
 const extensions = [
@@ -232,20 +231,9 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
 
 async function slimAST(ext, outdir, tgz, slim) {
   //console.log(`Building AST for ${tgz}...`);
+  const outfile = path.join(outdir, `slim.ast${ext}.json`);
+  const out = packedOut(outfile, config.extract.compress);
   const entries = slim.filter(entry => entry.endsWith(ext));
-  const compress = config.extract.compress;
-  const outfile = `slim.ast${ext}.json${compress ? '.lz4' : ''}`;
-  const outstream = fs.createWriteStream(path.join(outdir, outfile));
-  let out;
-  if (compress) {
-    const encoder = lz4.createEncoderStream({
-      highCompression: true
-    });
-    encoder.pipe(outstream);
-    out = encoder;
-  } else {
-    out = outstream;
-  }
   out.write('{');
   let count = 0;
   for (const entry of entries) {
