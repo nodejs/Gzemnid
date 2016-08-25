@@ -69,7 +69,7 @@ async function run() {
   for (const [url, file] of queue) {
     console.log(`Downloading: ${file}...`);
     const out = path.join(config.dir, 'current/', file);
-    const response = await session.get(url, { stream: true })
+    const response = await session.get(url, { stream: true });
     response.pipe(fs.createWriteStream(out));
     updated++;
     if (updated % 100 === 0) {
