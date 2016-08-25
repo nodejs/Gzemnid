@@ -35,7 +35,7 @@ Typical size — under 10 MiB.
 
 Created via `gzemnid stats`.
 
-Requires: `byField.info.json`.
+Requires: `byField.info.json` (created automatically if not present).
 
 ### Directory: meta/
 
@@ -51,7 +51,7 @@ Typical size is about 4 GiB, typical bootstrap time is quite long (could even ta
 
 Created via `gzemnid meta`.
 
-Requires: `byField.info.json`.
+Requires: `byField.info.json` (created automatically if not present).
 
 ### Directory: current/
 
@@ -63,7 +63,7 @@ Typical size is currently 80 GiB (and growing), typical bootstrap time depends o
 
 Created via `gzemnid packages`.
 
-Requires: `byField.info.json`.
+Requires: `byField.info.json` (created automatically if not present).
 
 ## Commands
 
