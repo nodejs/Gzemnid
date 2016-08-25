@@ -14,6 +14,12 @@ async function listInfo(callback, initial = true) {
     const filepath = path.join(config.dir, file);
     const stats = await fs.statAsync(filepath);
     console.log(`Package list version: ${new Date(stats.mtime)}.`);
+    if (Date.now() - stats.mtime > 24 * 60 * 60 * 1000) {
+      console.warn(`
+Warning: package list is older than 24 hours!
+ Consider running \`gzemnid fetch\` to update it.
+      `);
+    }
   } catch (e) {
     if (!initial) throw e;
     await fetch.run();
