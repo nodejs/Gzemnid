@@ -75,13 +75,13 @@ Here is the list of the current commands:
   * `gzemnid stats` — runs subcommand `rebuild`.
     * `gzemnid stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in `byField.info.json`.
     * `gzemnid stats update` — updates `stats.json` for only newly added packages, keeping the numbers for already present packages.
-  * `gzemnid meta` — builds `meta/` directory, downloading meta info for all packages present in `byField.info.json`.
+  * `gzemnid meta` — builds `meta/` directory, downloading meta info for all packages present in `byField.info.json`. Outdated files that were present in the `meta/` directory are moved to `meta.old/`.
   * `gzemnid depsdb` — runs subcommands `plain`, `resolved`, `nested`,
     * `gzemnid depsdb plain` —
     * `gzemnid depsdb resolved` —
     * `gzemnid depsdb nested` —
     * `gzemnid depsdb stats` —
-  * `gzemnid packages` —
+  * `gzemnid packages` — builds `current/` directory, downloading `latest` versions for all packages present in `byField.info.json`. Outdated files that were present in the `current/` directory are moved to `outdated/`.
   * `gzemnid extract` — runs subcommands `partials`, `totals`,
     * `gzemnid extract partials` —
     * `gzemnid extract totals` —
