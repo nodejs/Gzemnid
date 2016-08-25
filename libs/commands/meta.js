@@ -42,6 +42,7 @@ async function run() {
   await stream.promise;
   console.log(`Total: ${count}.`);
 
+  console.log(`To download: ${queue.length}.`);
   let updated = 0;
   for (const [url, file] of queue) {
     console.log(`Downloading: ${file}...`);
