@@ -39,7 +39,6 @@ async function run() {
       console.log(`Checking: ${count}...`);
     }
   });
-
   await stream.promise;
   console.log(`Total: ${count}.`);
 
@@ -54,8 +53,8 @@ async function run() {
       console.log(`Downloaded: ${updated}/${queue.length}...`);
     }
   }
-
   console.log(`New/updated: ${updated}.`);
+
   let moved = 0;
   for (const [file, keep] of map) {
     if (keep) continue;
@@ -69,6 +68,7 @@ async function run() {
     moved++;
   }
   console.log(`Moved: ${moved}.`);
+
   console.log('END');
 }
 
