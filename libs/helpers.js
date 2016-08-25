@@ -49,12 +49,11 @@ function readlines(file) {
 }
 
 function promiseEvent(obj, finish = 'end', error = 'error') {
-  const deferred = Promise.pending();
-  obj.once(finish, (...args) => deferred.resolve(...args));
-  obj.once(error, (...args) => deferred.reject(...args));
-  return deferred;
+  return new Promise((accept, reject) => {
+    obj.on(finish, accept);
+    obj.on(error, reject);
+  });
 }
-
 
 function jsonStream(file, type = '*') {
   let source;
