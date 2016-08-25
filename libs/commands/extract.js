@@ -187,7 +187,7 @@ async function partial(tgz, rebuild) {
   }
 
   if (config.extract.features.ast) {
-    await slimAST(outdir, tgz, slim);
+    await slimAST('.js', outdir, tgz, slim);
   }
 
   await rmrfAsync(tmp);
@@ -227,11 +227,11 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
   await out.endAsync();
 }
 
-async function slimAST(outdir, tgz, slim) {
+async function slimAST(ext, outdir, tgz, slim) {
   //console.log(`Building AST for ${tgz}...`);
-  const outfile = path.join(outdir, 'slim.ast.js.json');
+  const outfile = path.join(outdir, `slim.ast${ext}.json`);
   const out = fs.createWriteStream(outfile);
-  const entries = slim.filter(entry => entry.endsWith('.js'));
+  const entries = slim.filter(entry => entry.endsWith(ext));
   out.write('{');
   let count = 0;
   for (const entry of entries) {
