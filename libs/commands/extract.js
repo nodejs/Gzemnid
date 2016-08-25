@@ -364,13 +364,13 @@ async function totals() {
     promises.push(promiseEvent(streams[file]));
   }
   await Promise.all(promises);
-  console.log(`Totals: built ${built} partials.`);
+  console.log(`Totals: processed ${built} partials.`);
 
   if (config.extract.features.ast) {
     await totalsAST(available);
   }
 
-  console.log(`Totals: done!`);
+  console.log('Totals: done!');
 }
 
 async function run() {
