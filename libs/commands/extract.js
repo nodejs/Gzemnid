@@ -211,21 +211,17 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
   const out = fs.createWriteStream(outfile);
   const entries = slim.filter(entry => entry.endsWith(ext));
   for (const entry of entries) {
-    await new Promise((accept, reject) => {
-      const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
-      let num = 0;
-      readline.createInterface({
-        input: stream
-      }).on('line', line => {
-        num++;
-        if (line.length > 500) return;
-        if (!/[^\s]/.test(line)) return;
-        out.write(`${entry}:${num}:${line}\n`);
-      });
-      stream
-        .on('end', () => accept())
-        .on('error', reject);
+    const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
+    let num = 0;
+    readline.createInterface({
+      input: stream
+    }).on('line', line => {
+      num++;
+      if (line.length > 500) return;
+      if (!/[^\s]/.test(line)) return;
+      out.write(`${entry}:${num}:${line}\n`);
     });
+    await promiseEvent(stream);
   }
   await out.endAsync();
 }
