@@ -10,6 +10,8 @@ const { mkdirpAsync, jsonStream } = require('../helpers');
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
 async function run() {
+  console.log('Fetching package list...');
+
   await mkdirpAsync(config.dir);
   const source = await bhttp.get(registryUrl, {
     stream: true,
