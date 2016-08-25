@@ -286,7 +286,7 @@ async function totals() {
   }
   const streams = {};
   for (const file of filenames) {
-    streams[file] = fs.createWriteStream(path.join(outdir, file));
+    streams[file] = packedOut(path.join(outdir, file), config.extract.compress);
   }
   let built = 0;
   for (const tgz of available) {
@@ -297,30 +297,29 @@ async function totals() {
       stream.on('data', line => {
         streams[file].write(line);
       });
-      await new Promise((accept, reject) => {
-        stream.on('end', accept);
-        stream.on('error', reject);
-      });
+      await promiseEvent(stream);
     }
     built++;
     if (built % 10000 === 0) {
       console.log(`Totals: building ${built} / ${available.length}...`);
     }
   }
+  const promises = [];
   for (const file of filenames) {
-    await streams[file].endAsync();
+    if (config.extract.compress && streams[file].length === 0) {
+      // lz4 fails on empty files for some reason
+      streams[file].write('\n');
+    }
+    streams[file].end();
+    promises.push(promiseEvent(streams[file]));
   }
+  await Promise.all(promises);
   console.log(`Totals: built ${built}.`);
-}
-
-async function pack() {
-  // TODO: lzop things
 }
 
 async function run() {
   await partials();
   await totals();
-  await pack();
 }
 
 module.exports = {
