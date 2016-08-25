@@ -3,10 +3,17 @@
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const bhttp = require('bhttp');
 const config = require('../config').config;
 const {
   jsonStream, readlines, toMap, mkdirpAsync
 } = require('../helpers');
+
+const session = bhttp.session({
+  headers: {
+    'user-agent': config.useragent || 'Gzemnid'
+  }
+});
 
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'current/'));
@@ -16,14 +23,9 @@ async function run() {
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const map = toMap(current);
 
-  const out = {
-    download: fs.createWriteStream(path.join(config.dir, 'update.download.txt')),
-    wget: fs.createWriteStream(path.join(config.dir, 'update.wget.txt'))
-  };
-
   let count = 0;
-  let updated = 0;
   const stream = jsonStream('byField.info.json');
+  const queue = [];
   stream.on('data', info => {
     if (!info.tar) {
       console.log(`${info.id}: no tar!`);
@@ -49,21 +51,31 @@ async function run() {
       return;
     }
     if (!map.has(file)) {
-      out.download.write(`${url}\n`);
-      out.wget.write(`wget -nc ${url}\n`);
-      updated++;
+      queue.push([url, file]);
     }
 
     map.set(file, true);
     count++;
-    if (count % 10000 === 0) {
-      console.log(`${count}...`);
+    if (count % 50000 === 0) {
+      console.log(`Checking: ${count}...`);
     }
   });
 
   await stream.promise;
   console.log(`Total: ${count}.`);
 
+  console.log(`To download: ${queue.length}.`);
+  let updated = 0;
+  for (const [url, file] of queue) {
+    console.log(`Downloading: ${file}...`);
+    const out = path.join(config.dir, 'current/', file);
+    const response = await session.get(url, { stream: true })
+    response.pipe(fs.createWriteStream(out));
+    updated++;
+    if (updated % 100 === 0) {
+      console.log(`Downloaded: ${updated}/${queue.length}...`);
+    }
+  }
   console.log(`New/updated: ${updated}.`);
 
   let moved = 0;
