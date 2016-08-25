@@ -47,6 +47,14 @@ function readlines(file) {
   });
 }
 
+function promiseEvent(obj, finish = 'end', error = 'error') {
+  const deferred = Promise.pending();
+  obj.once(finish, (...args) => deferred.resolve(...args));
+  obj.once(error, (...args) => deferred.reject(...args));
+  return deferred;
+}
+
+
 function jsonStream(file, type = '*') {
   let source;
   if (typeof file === 'string') {
@@ -56,14 +64,10 @@ function jsonStream(file, type = '*') {
     source = file;
   }
 
-  const deferred = Promise.pending();
   const stream = source.pipe(JSONStream.parse(type));
-  stream.once('end', () => deferred.resolve());
-  stream.once('error', e => deferred.reject(e));
-  stream.promise = deferred.promise;
+  stream.promise = promiseEvent(stream);
   return stream;
 }
-
 async function read(file, type = '$*') {
   const data = {};
   let count = 0;
@@ -83,6 +87,7 @@ module.exports = {
   copyAsync,
   toMap,
   readlines,
+  promiseEvent,
   jsonStream,
   read
 };

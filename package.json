@@ -10,6 +10,7 @@
     "koa": "^2.0.0",
     "koa-logger": "^2.0.0",
     "koa-route": "^3.0.0",
+    "lz4": "^0.5.2",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
