@@ -48,9 +48,16 @@ function readlines(file) {
 }
 
 function jsonStream(file, type = '*') {
-  const resolved = path.join(config.dir, file);
+  let source;
+  if (typeof file === 'string') {
+    const resolved = path.join(config.dir, file);
+    source = fs.createReadStream(resolved);
+  } else {
+    source = file;
+  }
+
   const deferred = Promise.pending();
-  const stream = fs.createReadStream(resolved).pipe(JSONStream.parse(type));
+  const stream = source.pipe(JSONStream.parse(type));
   stream.once('end', () => deferred.resolve());
   stream.once('error', e => deferred.reject(e));
   stream.promise = deferred.promise;

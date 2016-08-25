@@ -3,10 +3,9 @@
 const Promise = require('bluebird');
 const fs = require('fs');
 const bhttp = require('bhttp');
-const JSONStream = require('JSONStream');
 const path = require('path');
 const config = require('../config').config;
-const { mkdirpAsync } = require('../helpers');
+const { mkdirpAsync, jsonStream } = require('../helpers');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
@@ -18,7 +17,7 @@ async function run() {
       'user-agent': config.useragent || 'Gzemnid'
     }
   });
-  const stream = source.pipe(JSONStream.parse('rows.*'));
+  const stream = jsonStream(source, 'rows.*');
 
   const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));
   out.write('[\n');
@@ -58,11 +57,11 @@ async function run() {
     }
   });
 
-  stream.on('end', () => {
-    console.log(`${count}.`);
-    out.write('\n]\n');
-    console.log('END');
-  });
+  await stream.promise;
+
+  console.log(`${count}.`);
+  out.write('\n]\n');
+  console.log('END');
 }
 
 module.exports = {
