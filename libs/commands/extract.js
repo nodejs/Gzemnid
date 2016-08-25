@@ -226,6 +226,25 @@ async function slimbuildJs(ext, outdir, tgz, slim) {
   await out.endAsync();
 }
 
+function getAST(code, ext) {
+  const density = code.length / code.split('\n').length;
+  if (density > 200) {
+    // This is probably a minified file
+    return 'minified';
+  }
+  switch (ext) {
+    case '.js':
+      try {
+        return babylon.parse(code);
+      } catch (e) { /* ignore */ }
+      try {
+        return babylon.parse(code, { sourceType: 'module' });
+      } catch (e) { /* ignore */ }
+      break;
+  }
+  return 'unparsed';
+}
+
 async function slimAST(ext, outdir, tgz, slim) {
   //console.log(`Building AST for ${tgz}...`);
   const outfile = path.join(outdir, `slim.ast${ext}.json`);
@@ -236,16 +255,7 @@ async function slimAST(ext, outdir, tgz, slim) {
   for (const entry of entries) {
     const filepath = path.join(config.dir, 'tmp', entry);
     const code = await fs.readFileAsync(filepath, 'utf-8');
-    let ast;
-    try {
-      ast = babylon.parse(code);
-    } catch (e1) {
-      try {
-        ast = babylon.parse(code, { sourceType: 'module' });
-      } catch (e2) {
-        ast = undefined;
-      }
-    }
+    const ast = getAST(code, ext);
     if (count !== 0) {
       out.write(',');
     }
