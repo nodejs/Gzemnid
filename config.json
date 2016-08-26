@@ -5,6 +5,9 @@
     "port": 3000,
     "tokens": {}
   },
+  "compression": {
+    "high": true
+  },
   "extract": {
     "features": {
       "ast": false
