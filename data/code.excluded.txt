@@ -105,6 +105,8 @@ logs
 
 ace-builds-?.*.tgz/demo
 ace-builds-?.*.tgz/src
+angular2-testing-*.tgz/test/bundle.spec.espowered.js
+angular2-testing-*.tgz/test/bundle.spec.js
 cesium-?.*.tgz/Source
 fishtones-?.*.tgz/test/mocks
 multi-typescript-*.tgz
