@@ -103,6 +103,8 @@ temp
 *.log
 logs
 
+ace-builds-?.*.tgz/demo
+ace-builds-?.*.tgz/src
 cesium-?.*.tgz/Source
 fishtones-?.*.tgz/test/mocks
 multi-typescript-*.tgz
