@@ -49,6 +49,7 @@ jquery
 jquery-1*
 jquery-ui-1*
 tiny_mce
+tinymce
 jquery2
 extjs
 travis-phantomjs
@@ -74,6 +75,8 @@ components/moment
 components/ng-*
 libs/bcv
 
+angular.js
+angular-locale_*.js
 bootstrap.js
 ext-all.js
 jquery.js
