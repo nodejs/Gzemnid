@@ -283,7 +283,7 @@ async function totalsAST(available) {
   for (const tgz of available) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
     for (const file of filenames) {
-      const stream = packedIn(path.join(tgzdir, file));
+      const stream = packedIn(path.join(tgzdir, file), config.extract.compress);
       readline.createInterface({
         input: stream
       }).on('line', line => {
