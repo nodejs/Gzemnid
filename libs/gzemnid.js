@@ -3,6 +3,7 @@
 const configManager = require('./config');
 
 const commands = {
+  ast: require('./commands/ast'),
   server: require('./commands/server'),
   fetch: require('./commands/fetch'),
   meta: require('./commands/meta'),
