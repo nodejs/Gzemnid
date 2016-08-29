@@ -102,11 +102,11 @@ Code search has both false negatives and false positives — some files are igno
 
 AST tree also ignores a list of excluded files and directories and minified code.
 
-All data get out of date the moment you build it.
-
 Downloads/month are not equal to popularity, and you can't see which version is being used.
 
 Code and AST search, among other things, takes only `latest` released package versions into an account. That could be significantly different from `master`, beta branches, also older versions could be much more popular that `latest`.
+
+All datasets get out of date the moment you build them.
 
 Scoped packages are ignored completely.
 
