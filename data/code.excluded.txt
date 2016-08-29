@@ -26,6 +26,7 @@ doc
 thirdparty
 third_party
 third-party
+ThirdParty
 3rd-party
 Frameworks
 *.framework
