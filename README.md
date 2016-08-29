@@ -93,3 +93,21 @@ Here is the list of the current commands:
 _TODO: document server._
 
 Started via `gzemnid server`.
+
+## Deception
+
+Note: think twice before relying on the data obtained from Gzemnid or using it to decide on something.
+
+Code search has both false negatives and false positives — some files are ignored, some files are unused, and some lines could be in a middle of a comment block. Also, your regexps are never ideal.
+
+AST tree also ignores a list of excluded files and directories and minified code.
+
+All data get out of date the moment you build it.
+
+Downloads/month are not equal to popularity, and you can't see which version is being used.
+
+Code and AST search, among other things, takes only `latest` released package versions into an account. That could be significantly different from `master`, beta branches, also older versions could be much more popular that `latest`.
+
+Scoped packages are ignored completely.
+
+Gzemnid deceives you, keep that in mind.
