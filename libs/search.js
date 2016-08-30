@@ -1,53 +1,36 @@
 'use strict';
-const child_process = require('child_process');
-
+const Promise = require('bluebird');
+const path = require('path');
+const readline = require('readline');
 const config = require('./config').config;
+const { packedIn, promiseEvent } = require('./helpers');
 const Queue = require('./queue');
+
+const extensions = [
+  'ts', 'coffee', 'js'
+];
 
 const queue = new Queue(3);
 
-async function spawn(command, args = [], options = {}) {
+async function code(query, languages, callback) {
   const done = await queue.claim();
-
-  options = Object.assign(
-    {
-      cwd: config.code.path,
-      env: {},
-      stdio: ['ignore', 'pipe', 'ignore']
-    },
-    options
-  );
-  if (config.code.uid !== null) {
-    options.uid = config.code.uid;
-  }
-  if (config.code.gid !== null) {
-    options.gid = config.code.gid;
-  }
-  const child = child_process.spawn(command, args, options);
-  child.on('exit', done);
-  return child;
-}
-
-async function code(query, languages = null) {
-  const args = ['--no-filename', '-E', query];
-
-  if (!query) {
-    throw new Error('Empty query.');
-  }
-
-  if (!languages) {
-    languages = null;
-  } else if (typeof languages === 'string') {
+  if (languages && typeof languages === 'string') {
     languages = languages.split(',');
   }
-
-  for (const ext of config.code.extensions) {
-    if (!languages || languages.indexOf(ext)) {
-      args.push(`slim.code.${ext}.lzo`);
-    }
+  for (const ext of extensions) {
+    if (languages && languages.indexOf(ext) === -1) return;
+    const infile = path.join(config.dir, 'out/', `slim.code.${ext}.txt`);
+    const stream = packedIn(infile, config.extract.compress);
+    const regex = new RegExp(query);
+    readline.createInterface({
+      input: stream
+    }).on('line', line => {
+      if (!regex.test(line)) return;
+      callback(line);
+    });
+    await promiseEvent(stream);
   }
-
-  return await spawn('lzgrep', args);
+  done();
 }
 
 module.exports = {

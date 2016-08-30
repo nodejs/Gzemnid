@@ -13,11 +13,5 @@
       "ast": false
     },
     "compress": true
-  },
-  "code": {
-    "path": "./pool/slim",
-    "uid": 0,
-    "gid": 0,
-    "extensions": ["coffee", "ts", "js"]
   }
 }

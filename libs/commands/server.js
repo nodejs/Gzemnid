@@ -40,19 +40,16 @@ async function run() {
     ctx.status = 200;
     ctx.body = new stream.PassThrough();
 
-    let child;
     ctx.res.on('close', () => {
-      if (child) child.kill('SIGKILL');
+      // TODO: handle early close
     });
 
     setImmediate(async () => {
       ctx.res.flushHeaders();
-      child = await search.code(ctx.query.query);
-      child.on('exit', () => {
-        child = undefined;
-      });
-      if (ctx.state.closed) child.kill('SIGKILL');
-      child.stdout.pipe(ctx.body);
+      await search.code(ctx.query.query, null, line =>
+        ctx.body.write(`${line}\n`)
+      );
+      ctx.body.end();
     });
   }));
 
