@@ -21,7 +21,8 @@ async function run() {
     ctx.set('Content-Security-Policy', 'default-src \'self\'');
 
     if (ctx.request.url.startsWith('/api/')) {
-      if (!ctx.query.token || !config.api.tokens[ctx.query.token]) {
+      const token = ctx.query.token;
+      if (!token || !config.api.tokens.hasOwnProperty(token)) {
         ctx.throw(403);
       }
     }
