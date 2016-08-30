@@ -182,11 +182,7 @@ async function partial(tgz, rebuild) {
   );
 
   for (const ext of extensions) {
-    if (config.extract.native) {
-      await slimbuildNative(tmp, ext, outdir, tgz);
-    } else {
-      await slimbuildJs(ext, outdir, tgz, slim);
-    }
+    await slimCode(ext, outdir, tgz, slim);
   }
 
   if (config.extract.features.ast) {
@@ -196,17 +192,7 @@ async function partial(tgz, rebuild) {
   await rmrfAsync(tmp);
 }
 
-let slimsh;
-async function slimbuildNative(dir, ext, outdir, tgz) {
-  if (!slimsh) {
-    slimsh = path.resolve(path.join(config.basedir, 'scripts/slimbuild.sh'));
-  }
-  await child_process.execFileAsync(slimsh, [ext, path.resolve(outdir), tgz], {
-    cwd: path.join(dir, '..')
-  });
-}
-
-async function slimbuildJs(ext, outdir, tgz, slim) {
+async function slimCode(ext, outdir, tgz, slim) {
   const outfile = path.join(outdir, `slim.code${ext}.txt`);
   const out = fs.createWriteStream(outfile);
   const entries = slim.filter(entry => entry.endsWith(ext));

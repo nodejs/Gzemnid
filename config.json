@@ -12,8 +12,7 @@
     "features": {
       "ast": false
     },
-    "compress": true,
-    "native": false
+    "compress": true
   },
   "code": {
     "path": "./pool/slim",
