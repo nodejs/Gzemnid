@@ -100,7 +100,7 @@ Note: think twice before relying on the data obtained from Gzemnid or using it t
 
 Code search has both false negatives and false positives — some files are ignored, some files are unused, and some lines could be in a middle of a comment block. Also, your regexps are never ideal.
 
-AST tree also ignores a list of excluded files and directories and minified code.
+AST tree also ignores a list of excluded files and directories and minified code and includes unused code and files if those are present in the package for some reason.
 
 Downloads/month are not equal to popularity, and you can't see which version is being used.
 
