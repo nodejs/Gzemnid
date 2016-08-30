@@ -85,6 +85,7 @@ Here is the list of the current commands:
   * `gzemnid extract` — runs subcommands `partials`, `totals`,
     * `gzemnid extract partials` —
     * `gzemnid extract totals` —
+  * `gzemnid code search {regex}` — performs a code search over a specified regular expression using the pre-built dataset.
   * `gzemnid ast execute {file.js}` — performs an AST search using the pre-built dataset. Example script — in `examples/ast_status.js`, execute with `gzemnid ast execute ./examples/ast_status.js`,
   * `gzemnid server` — starts the web server providing the search API endpoints.
 
