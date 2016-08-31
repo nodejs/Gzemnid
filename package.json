@@ -14,14 +14,11 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.14.0",
     "babel-eslint": "^6.0.4",
     "babel-preset-stage-3": "^6.3.13",
     "eslint": "^3.0.0",
-    "eslint-plugin-babel": "^3.3.0",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.2",
-    "gulp-changed": "^1.3.0",
-    "gulp-plumber": "^1.0.1"
+    "eslint-plugin-babel": "^3.3.0"
   },
   "repository": {
     "type": "git",
@@ -34,8 +31,8 @@
   "bin": "gzemnid.js",
   "scripts": {
     "lint": "eslint --cache *.js libs",
-    "build": "gulp build",
-    "watch": "gulp watch"
+    "build": "babel -d build -q libs",
+    "watch": "babel -d build -w libs"
   },
   "files": [
     "data/**/*.txt",
