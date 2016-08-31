@@ -21,7 +21,6 @@
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
     "gulp-changed": "^1.3.0",
-    "gulp-eslint": "^3.0.1",
     "gulp-plumber": "^1.0.1"
   },
   "repository": {
@@ -34,9 +33,9 @@
   },
   "bin": "gzemnid.js",
   "scripts": {
-    "lint": "gulp lint",
+    "lint": "eslint --cache *.js libs",
     "build": "gulp build",
-    "watch": "gulp"
+    "watch": "gulp watch"
   },
   "files": [
     "data/**/*.txt",
