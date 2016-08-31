@@ -30,13 +30,13 @@
   },
   "bin": "gzemnid.js",
   "scripts": {
-    "lint": "eslint --cache *.js libs",
-    "build": "babel -d build -q libs",
-    "watch": "babel -d build -w libs"
+    "lint": "eslint --cache *.js src",
+    "build": "babel -d build -q src",
+    "watch": "babel -d build -w src"
   },
   "files": [
     "data/**/*.txt",
-    "libs/**/*.js",
+    "src/**/*.js",
     "build/**/*.js",
     "scripts/*.sh",
     ".eslintrc",
