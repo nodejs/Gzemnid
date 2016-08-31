@@ -13,9 +13,7 @@ gulp.task('libs', () =>
   gulp.src(files.libs)
     .pipe(plumber())
     .pipe(changed('build'))
-    .pipe(babel({
-      presets: ['stage-3']
-    }))
+    .pipe(babel())
     .pipe(gulp.dest('build'))
 );
 
