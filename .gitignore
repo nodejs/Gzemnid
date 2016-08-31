@@ -1,5 +1,6 @@
 *~
 *.log
+.eslintcache
 node_modules
 build
 private
