@@ -56,7 +56,9 @@ async function partials(subcommand, single) {
   }
   const rebuild = subcommand === 'rebuild';
   await mkdirpAsync(path.join(config.dir, 'partials/'));
+  console.log('Reading packages directory...');
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+  console.log('Reading partials directory...');
   const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
   const currentSet = new Set(current);
   const presentSet = new Set(present);

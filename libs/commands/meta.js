@@ -16,6 +16,7 @@ const session = bhttp.session({
 
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'meta/'));
+  console.log('Reading meta directory...');
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
   const map = toMap(current);
 

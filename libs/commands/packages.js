@@ -19,10 +19,12 @@ async function run() {
 
   const broken = new Set(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
   const blacklist = new Set(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
+  console.log('Reading packages directory...');
   const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
   const map = toMap(current);
 
   const queue = [];
+  let size = 0;
   await common.listInfo(info => {
     if (!info.tar) {
       console.log(`${info.id}: no tar!`);
@@ -52,6 +54,7 @@ async function run() {
     }
 
     map.set(file, true);
+    size++;
   });
 
   console.log(`To download: ${queue.length}.`);
@@ -68,6 +71,7 @@ async function run() {
   }
   console.log(`New/updated: ${updated}.`);
 
+  console.log(`To move: ${map.size - size}`);
   let moved = 0;
   for (const [file, keep] of map) {
     if (keep) continue;
