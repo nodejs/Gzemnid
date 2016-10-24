@@ -41,7 +41,6 @@
     "scripts/*.sh",
     ".eslintrc",
     "config.json",
-    "gulpfile.js",
     "gzemnid.js"
   ]
 }
