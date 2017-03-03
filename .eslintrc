@@ -1,5 +1,5 @@
-parser: babel-eslint
-plugins: ["babel"]
+parserOptions:
+  ecmaVersion: 2017
 env:
   node: true
 extends: eslint:recommended
@@ -7,7 +7,7 @@ rules:
   array-bracket-spacing: 2
   array-callback-return: 2
   arrow-body-style: 2
-  babel/arrow-parens: [2, "as-needed"]
+  arrow-parens: [2, "as-needed"]
   brace-style: 2
   camelcase: 0
   comma-dangle: 2
