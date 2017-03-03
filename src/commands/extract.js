@@ -50,58 +50,6 @@ async function loadExcluded() {
   return excludedLoaded;
 }
 
-async function partials(subcommand, single) {
-  if (subcommand && subcommand !== 'rebuild') {
-    throw new Error(`Partials: unexpected command: ${subcommand}`);
-  }
-  const rebuild = subcommand === 'rebuild';
-  await mkdirpAsync(path.join(config.dir, 'partials/'));
-  console.log('Reading packages directory...');
-  const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
-  console.log('Reading partials directory...');
-  const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
-  const currentSet = new Set(current);
-  const presentSet = new Set(present);
-  let removed = 0;
-  for (const tgz of present) {
-    if (single && tgz !== single) continue;
-    if (currentSet.has(tgz)) continue;
-    const dir = path.join(config.dir, 'partials', tgz);
-    await rmrfAsync(dir);
-    removed++;
-    if (removed % 10000 === 0) {
-      console.log(`Partials: removing ${removed}...`);
-    }
-  }
-  console.log(`Partials: removed ${removed}.`);
-  const tmp = path.join(config.dir, 'tmp/');
-  await rmrfAsync(tmp);
-  await mkdirpAsync(tmp);
-  let built = 0;
-  let errors = 0;
-  const total = currentSet.size - presentSet.size + removed;
-  for (const tgz of current) {
-    if (single && tgz !== single) continue;
-    if (!rebuild && presentSet.has(tgz)) continue;
-    console.log(`Partial: building ${tgz}`);
-    try {
-      await partial(tgz, rebuild);
-    } catch (e) {
-      console.error(`Partial: failed ${tgz}: ${e}`);
-      errors++;
-      await rmrfAsync(path.join(config.dir, 'partials/', tgz));
-      await rmrfAsync(path.join(config.dir, 'tmp/', tgz));
-      continue;
-    }
-    built++;
-    if (built % 10000 === 0) {
-      console.log(`Partials: building ${built} / ${total - errors}...`);
-    }
-  }
-  console.log(`Partials: built ${built}, errors: ${errors}.`);
-  await rmrfAsync(tmp);
-}
-
 async function listTar(file) {
   const tar = await child_process.execFileAsync(
     'tar',
@@ -111,6 +59,67 @@ async function listTar(file) {
   return tar.split('\n')
             .filter(x => !!x)
             .sort();
+}
+
+async function slimCode(ext, outdir, tgz, slim) {
+  const outfile = path.join(outdir, `slim.code${ext}.txt`);
+  const out = fs.createWriteStream(outfile);
+  const entries = slim.filter(entry => entry.endsWith(ext));
+  for (const entry of entries) {
+    const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
+    let num = 0;
+    readline.createInterface({
+      input: stream
+    }).on('line', line => {
+      num++;
+      if (line.length > 500) return;
+      if (!/[^\s]/.test(line)) return;
+      out.write(`${entry}:${num}:${line}\n`);
+    });
+    await promiseEvent(stream);
+  }
+  await out.endAsync();
+}
+
+function getAST(code, ext) {
+  const density = code.length / code.split('\n').length;
+  if (density > 200) {
+    // This is probably a minified file
+    return 'minified';
+  }
+  switch (ext) {
+    case '.js':
+      try {
+        return babylon.parse(code);
+      } catch (e) { /* ignore */ }
+      try {
+        return babylon.parse(code, { sourceType: 'module' });
+      } catch (e) { /* ignore */ }
+      break;
+  }
+  return 'unparsed';
+}
+
+async function slimAST(ext, outdir, tgz, slim) {
+  //console.log(`Building AST for ${tgz}...`);
+  const outfile = path.join(outdir, `slim.ast${ext}.json`);
+  const out = packedOut(outfile, config.extract.compress);
+  const entries = slim.filter(entry => entry.endsWith(ext));
+  out.write('{');
+  let count = 0;
+  for (const entry of entries) {
+    const filepath = path.join(config.dir, 'tmp', entry);
+    const code = await fs.readFileAsync(filepath, 'utf-8');
+    const ast = getAST(code, ext);
+    if (count !== 0) {
+      out.write(',');
+    }
+    out.write(`\n ${JSON.stringify(entry)}: ${JSON.stringify(ast)}`);
+    count++;
+  }
+  out.write('\n}\n');
+  out.end();
+  await promiseEvent(out);
 }
 
 async function partial(tgz, rebuild) {
@@ -194,65 +203,56 @@ async function partial(tgz, rebuild) {
   await rmrfAsync(tmp);
 }
 
-async function slimCode(ext, outdir, tgz, slim) {
-  const outfile = path.join(outdir, `slim.code${ext}.txt`);
-  const out = fs.createWriteStream(outfile);
-  const entries = slim.filter(entry => entry.endsWith(ext));
-  for (const entry of entries) {
-    const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
-    let num = 0;
-    readline.createInterface({
-      input: stream
-    }).on('line', line => {
-      num++;
-      if (line.length > 500) return;
-      if (!/[^\s]/.test(line)) return;
-      out.write(`${entry}:${num}:${line}\n`);
-    });
-    await promiseEvent(stream);
+async function partials(subcommand, single) {
+  if (subcommand && subcommand !== 'rebuild') {
+    throw new Error(`Partials: unexpected command: ${subcommand}`);
   }
-  await out.endAsync();
-}
-
-function getAST(code, ext) {
-  const density = code.length / code.split('\n').length;
-  if (density > 200) {
-    // This is probably a minified file
-    return 'minified';
-  }
-  switch (ext) {
-    case '.js':
-      try {
-        return babylon.parse(code);
-      } catch (e) { /* ignore */ }
-      try {
-        return babylon.parse(code, { sourceType: 'module' });
-      } catch (e) { /* ignore */ }
-      break;
-  }
-  return 'unparsed';
-}
-
-async function slimAST(ext, outdir, tgz, slim) {
-  //console.log(`Building AST for ${tgz}...`);
-  const outfile = path.join(outdir, `slim.ast${ext}.json`);
-  const out = packedOut(outfile, config.extract.compress);
-  const entries = slim.filter(entry => entry.endsWith(ext));
-  out.write('{');
-  let count = 0;
-  for (const entry of entries) {
-    const filepath = path.join(config.dir, 'tmp', entry);
-    const code = await fs.readFileAsync(filepath, 'utf-8');
-    const ast = getAST(code, ext);
-    if (count !== 0) {
-      out.write(',');
+  const rebuild = subcommand === 'rebuild';
+  await mkdirpAsync(path.join(config.dir, 'partials/'));
+  console.log('Reading packages directory...');
+  const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+  console.log('Reading partials directory...');
+  const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
+  const currentSet = new Set(current);
+  const presentSet = new Set(present);
+  let removed = 0;
+  for (const tgz of present) {
+    if (single && tgz !== single) continue;
+    if (currentSet.has(tgz)) continue;
+    const dir = path.join(config.dir, 'partials', tgz);
+    await rmrfAsync(dir);
+    removed++;
+    if (removed % 10000 === 0) {
+      console.log(`Partials: removing ${removed}...`);
     }
-    out.write(`\n ${JSON.stringify(entry)}: ${JSON.stringify(ast)}`);
-    count++;
   }
-  out.write('\n}\n');
-  out.end();
-  await promiseEvent(out);
+  console.log(`Partials: removed ${removed}.`);
+  const tmp = path.join(config.dir, 'tmp/');
+  await rmrfAsync(tmp);
+  await mkdirpAsync(tmp);
+  let built = 0;
+  let errors = 0;
+  const total = currentSet.size - presentSet.size + removed;
+  for (const tgz of current) {
+    if (single && tgz !== single) continue;
+    if (!rebuild && presentSet.has(tgz)) continue;
+    console.log(`Partial: building ${tgz}`);
+    try {
+      await partial(tgz, rebuild);
+    } catch (e) {
+      console.error(`Partial: failed ${tgz}: ${e}`);
+      errors++;
+      await rmrfAsync(path.join(config.dir, 'partials/', tgz));
+      await rmrfAsync(path.join(config.dir, 'tmp/', tgz));
+      continue;
+    }
+    built++;
+    if (built % 10000 === 0) {
+      console.log(`Partials: building ${built} / ${total - errors}...`);
+    }
+  }
+  console.log(`Partials: built ${built}, errors: ${errors}.`);
+  await rmrfAsync(tmp);
 }
 
 async function totalsAST(available) {
