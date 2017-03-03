@@ -143,7 +143,7 @@ async function partial(tgz, rebuild) {
     if (!lines.every(x => x.indexOf('/') !== -1)) {
       throw new Error('Package contains top-level files!');
     }
-    files = lines.map(x => x.replace(/[^\/]*\//, ''))
+    files = lines.map(x => x.replace(/[^/]*\//, ''))
                  .map(x => `${tgz}/${x}`);
     await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
     // TODO: rebuild new extensions on extensions list changes
