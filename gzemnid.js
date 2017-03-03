@@ -2,4 +2,4 @@
 
 'use strict';
 
-require('./build/gzemnid');
+require('./src/gzemnid');

@@ -14,8 +14,6 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-preset-es2017": "^6.14.0",
     "eslint": "^3.16.1"
   },
   "repository": {
@@ -28,9 +26,7 @@
   },
   "bin": "gzemnid.js",
   "scripts": {
-    "lint": "eslint --cache *.js src",
-    "build": "babel -d build -q src",
-    "watch": "babel -d build -w src"
+    "lint": "eslint --cache *.js src"
   },
   "files": [
     "data/**/*.txt",
