@@ -8,7 +8,7 @@ const config = require('../config').config;
 const common = require('../common');
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
-const grouplimit = 8000;
+const grouplimit = 1000;
 const session = bhttp.session({
   headers: {
     'user-agent': config.useragent || 'Gzemnid'
