@@ -8,7 +8,7 @@ const config = require('../config').config;
 const common = require('../common');
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
-const grouplimit = 1000;
+const groupSize = 128;
 const session = bhttp.session({
   headers: {
     'user-agent': config.useragent || 'Gzemnid'
@@ -28,19 +28,16 @@ function buildMap(data) {
 async function getGroups(map) {
   const groups = [];
   let group = [];
-  let groupLength = -1;
   let needed = 0;
 
   const total = await common.listInfo(info => {
     const name = info.name;
     if (map.has(name)) return;
     needed++;
-    if (groupLength > 0 && groupLength + 1 + name.length >= grouplimit) {
+    if (group.length >= groupSize) {
       groups.push(group);
       group = [];
-      groupLength = -1;
     }
-    groupLength += 1 + name.length;
     group.push(name);
     map.set(name, true);
   });
