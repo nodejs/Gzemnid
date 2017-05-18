@@ -72,8 +72,13 @@ async function update() {
     const body = res.body;
     for (const name of Object.keys(body)) {
       processed++;
+      if (!body[name]) {
+        console.log(`${name}: bad package info: ${name}!`);
+        continue;
+      }
       if (name !== body[name].package) {
         console.log(`${name}: bad package name: ${body[name].package}!`);
+        continue;
       }
       data[name] = body[name].downloads;
     }
