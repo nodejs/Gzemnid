@@ -70,7 +70,11 @@ async function update() {
       requested -= group.length;
       continue;
     }
-    const body = res.body;
+    let body = res.body;
+    if (group.length === 1) {
+      body = {};
+      body[group[0]] == res.body;
+    }
     for (const name of Object.keys(body)) {
       processed++;
       if (!body[name]) {
