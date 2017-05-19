@@ -64,7 +64,11 @@ async function update() {
     console.log(`Request size: ${group.length}, total requested: ${requested}/${needed}.`);
     const res = await session.get(endpoint + group.join(','));
     if (res.statusCode !== 200) {
-      throw Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
+      const error = new Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
+      console.log(`Got error: ${error}, retrying step ${i}...`);
+      i--;
+      requested -= group.length;
+      continue;
     }
     const body = res.body;
     for (const name of Object.keys(body)) {
