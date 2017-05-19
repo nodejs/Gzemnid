@@ -15,6 +15,9 @@ const session = bhttp.session({
   }
 });
 
+// Ref: https://github.com/npm/registry/issues/167
+const badPackages = ['pipe'];
+
 function buildMap(data) {
   const map = new Map();
   Object.keys(data).forEach(file => {
@@ -34,6 +37,11 @@ async function getGroups(map) {
     const name = info.name;
     if (map.has(name)) return;
     needed++;
+    if (badPackages.includes(name)) {
+      groups.push([name]);
+      map.set(name, true);
+      return;
+    }
     if (group.length >= groupSize) {
       groups.push(group);
       group = [];
