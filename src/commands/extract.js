@@ -58,6 +58,7 @@ async function listTar(file) {
   );
   return tar.split('\n')
             .filter(x => !!x)
+            .filter(x => x !== 'package')
             .sort();
 }
 
