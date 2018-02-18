@@ -2,6 +2,7 @@ node_modules*
 old_node_modules
 _node_modules
 .node_modules
+.yarn-cache
 node_modules_prev
 bower_components
 jspm_packages
