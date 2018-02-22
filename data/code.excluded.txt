@@ -4,6 +4,7 @@ _node_modules
 .node_modules
 .yarn-cache
 node_modules_prev
+.node_modules.ember-try
 bower_components
 jspm_packages
 client/packages
