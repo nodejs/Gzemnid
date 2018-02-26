@@ -15,6 +15,10 @@ async function plain() {
   let count = 0;
   for (const file of current) {
     const data = JSON.parse(await fs.readFileAsync(path.join(config.dir, 'meta/', file)));
+    if (!data || !data.versions) {
+      console.error(`Versions not defined for ${file}!`);
+      continue;
+    }
     if (count > 0) {
       out.write(', ');
     }
