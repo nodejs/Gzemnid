@@ -16,7 +16,7 @@ const session = bhttp.session({
 });
 
 // Ref: https://github.com/npm/registry/issues/167
-const badPackages = ['pipe'];
+const badPackages = [];
 
 function buildMap(data) {
   const map = new Map();
