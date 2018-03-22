@@ -81,7 +81,7 @@ async function update() {
     let body = res.body;
     if (group.length === 1) {
       body = {};
-      body[group[0]] == res.body;
+      body[group[0]] = res.body;
     }
     for (const name of Object.keys(body)) {
       processed++;
