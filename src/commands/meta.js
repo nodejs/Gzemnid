@@ -47,14 +47,15 @@ async function run() {
     map.set(file, true);
   });
 
-  console.log(`To download: ${queue.length}.`);
+  const needed = queue.length;
+  console.log(`To download: ${needed}.`);
   let updated = 0;
   while (queue.length > 0) {
     const block = queue.splice(0, 10);
     await Promise.all(block.map(args => downloadOne(...args)));
     updated += block.length;
     if (updated % 100 < block.length) {
-      console.log(`Downloaded: ${updated}/${queue.length}...`);
+      console.log(`Downloaded: ${updated}/${needed}...`);
     }
   }
   console.log(`New/updated: ${updated}.`);
