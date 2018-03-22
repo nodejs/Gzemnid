@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const path = require('path');
 const config = require('../config').config;
 const { packedIn, jsonStream } = require('../helpers');

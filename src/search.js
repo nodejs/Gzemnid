@@ -1,5 +1,4 @@
 'use strict';
-const Promise = require('bluebird');
 const path = require('path');
 const readline = require('readline');
 const config = require('./config').config;

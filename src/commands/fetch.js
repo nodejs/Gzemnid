@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const fs = require('fs');
 const bhttp = require('bhttp');
 const path = require('path');

@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const { code } = require('../search');
 
 async function search(query, languages = null) {

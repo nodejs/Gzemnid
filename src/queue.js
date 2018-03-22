@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 class Queue {
 
   constructor(limit = 1) {
