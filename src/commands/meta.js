@@ -14,6 +14,13 @@ const session = bhttp.session({
   }
 });
 
+async function downloadOne(url, file) {
+  console.log(`Downloading: ${file}...`);
+  const out = path.join(config.dir, 'meta/', file);
+  const response = await session.get(url, { stream: true });
+  response.pipe(fs.createWriteStream(out));
+}
+
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'meta/'));
   console.log('Reading meta directory...');
@@ -38,13 +45,11 @@ async function run() {
 
   console.log(`To download: ${queue.length}.`);
   let updated = 0;
-  for (const [url, file] of queue) {
-    console.log(`Downloading: ${file}...`);
-    const out = path.join(config.dir, 'meta/', file);
-    const response = await session.get(url, { stream: true });
-    response.pipe(fs.createWriteStream(out));
-    updated++;
-    if (updated % 100 === 0) {
+  while (queue.length > 0) {
+    const block = queue.splice(0, 10);
+    await Promise.all(block.map(args => downloadOne(...args)));
+    updated += block.length;
+    if (updated % 100 < block.length) {
       console.log(`Downloaded: ${updated}/${queue.length}...`);
     }
   }
