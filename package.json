@@ -29,6 +29,9 @@
   "scripts": {
     "lint": "eslint --cache *.js src"
   },
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "files": [
     "data/**/*.txt",
     "src/**/*.js",
