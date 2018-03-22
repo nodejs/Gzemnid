@@ -6,7 +6,7 @@ const path = require('path');
 const bhttp = require('bhttp');
 const config = require('../config').config;
 const common = require('../common');
-const { toMap, mkdirpAsync } = require('../helpers');
+const { toMap, mkdirpAsync, promiseEvent } = require('../helpers');
 
 const session = bhttp.session({
   headers: {
@@ -17,8 +17,12 @@ const session = bhttp.session({
 async function downloadOne(url, file) {
   console.log(`Downloading: ${file}...`);
   const out = path.join(config.dir, 'meta/', file);
+  const tmp = `${out}.tmp`;
   const response = await session.get(url, { stream: true });
-  response.pipe(fs.createWriteStream(out));
+  const write = fs.createWriteStream(tmp);
+  response.pipe(write);
+  await promiseEvent(write, 'finish');
+  await fs.renameAsync(tmp, out);
 }
 
 async function run() {
