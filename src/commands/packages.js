@@ -6,13 +6,24 @@ const path = require('path');
 const bhttp = require('bhttp');
 const config = require('../config').config;
 const common = require('../common');
-const { readlines, toMap, mkdirpAsync } = require('../helpers');
+const { readlines, toMap, mkdirpAsync, promiseEvent } = require('../helpers');
 
 const session = bhttp.session({
   headers: {
     'user-agent': config.useragent || 'Gzemnid'
   }
 });
+
+async function downloadOne(url, file) {
+  console.log(`Downloading: ${file}...`);
+  const out = path.join(config.dir, 'current/', file);
+  const tmp = `${out}.tmp`;
+  const response = await session.get(url, { stream: true });
+  const write = fs.createWriteStream(tmp);
+  response.pipe(write);
+  await promiseEvent(write, 'finish');
+  await fs.renameAsync(tmp, out);
+}
 
 async function run() {
   await mkdirpAsync(path.join(config.dir, 'current/'));
@@ -60,10 +71,7 @@ async function run() {
   console.log(`To download: ${queue.length}.`);
   let updated = 0;
   for (const [url, file] of queue) {
-    console.log(`Downloading: ${file}...`);
-    const out = path.join(config.dir, 'current/', file);
-    const response = await session.get(url, { stream: true });
-    response.pipe(fs.createWriteStream(out));
+    await downloadOne(url, file);
     updated++;
     if (updated % 100 === 0) {
       console.log(`Downloaded: ${updated}/${queue.length}...`);
