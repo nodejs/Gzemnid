@@ -68,13 +68,15 @@ async function run() {
     size++;
   });
 
-  console.log(`To download: ${queue.length}.`);
+  const needed = queue.length;
+  console.log(`To download: ${needed}.`);
   let updated = 0;
-  for (const [url, file] of queue) {
-    await downloadOne(url, file);
-    updated++;
-    if (updated % 100 === 0) {
-      console.log(`Downloaded: ${updated}/${queue.length}...`);
+  while (queue.length > 0) {
+    const block = queue.splice(0, 5);
+    await Promise.all(block.map(args => downloadOne(...args)));
+    updated += block.length;
+    if (updated % 100 < block.length) {
+      console.log(`Downloaded: ${updated}/${needed}...`);
     }
   }
   console.log(`New/updated: ${updated}.`);
