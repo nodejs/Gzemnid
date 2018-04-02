@@ -34,4 +34,7 @@ async function main(argv) {
   commands[command][method](...argv);
 }
 
+process.on('SIGPIPE', () => process.exit());
+process.on('SIGTERM', () => process.exit());
+
 main(process.argv).catch(e => console.error(e.stack));
