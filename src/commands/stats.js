@@ -55,6 +55,25 @@ async function getGroups(map) {
   return { groups, total, needed };
 }
 
+async function fetchStats(group, info) {
+  info.requested += group.length;
+  console.log(`Request size: ${group.length}, total requested: ${info.requested}/${info.needed}.`);
+  const res = await session.get(endpoint + group.join(','));
+  if (res.statusCode !== 200) {
+    const error = new Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
+    console.log(`Got error: ${error}, retrying...`);
+    info.requested -= group.length;
+    return fetchStats(group, info);
+  }
+  if (group.length === 1) {
+    // Single-packae has different format
+    const body = {};
+    body[group[0]] = res.body;
+    return body;
+  }
+  return res.body;
+}
+
 async function update() {
   const file = path.join(config.dir, 'stats.json');
   const data = await fs.readFileAsync(file)
@@ -64,27 +83,13 @@ async function update() {
   const map = buildMap(data);
   const { groups, total, needed } = await getGroups(map);
 
-  let requested = 0;
-  let processed = 0;
-  for (let i = 0; i < groups.length; i++) {
-    const group = groups[i];
-    requested += group.length;
-    console.log(`Request size: ${group.length}, total requested: ${requested}/${needed}.`);
-    const res = await session.get(endpoint + group.join(','));
-    if (res.statusCode !== 200) {
-      const error = new Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
-      console.log(`Got error: ${error}, retrying step ${i}...`);
-      i--;
-      requested -= group.length;
-      continue;
-    }
-    let body = res.body;
-    if (group.length === 1) {
-      body = {};
-      body[group[0]] = res.body;
-    }
+  const info = { total, needed, requested: 0, processed: 0 };
+  while (groups.length > 0) {
+    const block = groups.splice(0, 5);
+    const res = await Promise.all(block.map(group => fetchStats(group, info)));
+    const body = Object.assign({}, ...res);
     for (const name of Object.keys(body)) {
-      processed++;
+      info.processed++;
       if (!body[name]) {
         console.log(`${name}: bad package info: ${name}!`);
         continue;
@@ -95,8 +100,8 @@ async function update() {
       }
       data[name] = body[name].downloads;
     }
-    const saved = processed + total - needed;
-    console.log(`Processed: ${processed}/${needed}, saved: ${saved}/${total}.`);
+    const saved = info.processed + info.total - info.needed;
+    console.log(`Processed: ${info.processed}/${info.needed}, saved: ${saved}/${info.total}.`);
     await fs.writeFileAsync(file, JSON.stringify(data, undefined, 1));
   }
 }
