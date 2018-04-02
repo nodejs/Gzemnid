@@ -2,18 +2,13 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
-const bhttp = require('bhttp');
 const path = require('path');
 const config = require('../config').config;
 const common = require('../common');
+const { fetch } = require('../helpers');
 
 const endpoint = 'https://api.npmjs.org/downloads/point/last-month/';
 const groupSize = 128;
-const session = bhttp.session({
-  headers: {
-    'user-agent': config.useragent || 'Gzemnid'
-  }
-});
 
 // Ref: https://github.com/npm/registry/issues/167
 const badPackages = [];
@@ -58,9 +53,9 @@ async function getGroups(map) {
 async function fetchStats(group, info) {
   info.requested += group.length;
   console.log(`Request size: ${group.length}, total requested: ${info.requested}/${info.needed}.`);
-  const res = await session.get(endpoint + group.join(','));
-  if (res.statusCode !== 200) {
-    const error = new Error(`[npm API] ${res.statusCode}: ${res.statusMessage}`);
+  const res = await fetch(endpoint + group.join(','));
+  if (res.status !== 200) {
+    const error = new Error(`[npm API] ${res.status}: ${res.statusText}`);
     console.log(`Got error: ${error}, retrying...`);
     info.requested -= group.length;
     return fetchStats(group, info);
@@ -68,10 +63,10 @@ async function fetchStats(group, info) {
   if (group.length === 1) {
     // Single-packae has different format
     const body = {};
-    body[group[0]] = res.body;
+    body[group[0]] = await res.json();
     return body;
   }
-  return res.body;
+  return res.json();
 }
 
 async function update() {

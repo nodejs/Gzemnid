@@ -7,6 +7,7 @@ const mkdirpAsync = Promise.promisify(require('mkdirp'));
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
+const fetch = require('node-fetch');
 const lz4 = require('lz4');
 const config = require('./config').config;
 
@@ -103,6 +104,14 @@ async function read(file, type = '$*') {
   return data;
 }
 
+function fetchWrap(url, opts = {}) {
+  const options = Object.assign({}, opts);
+  options.headers = Object.assign({}, opts.headers || {});
+  if (!options.headers['user-agent'])
+    options.headers['user-agent'] = config.useragent || 'Gzemnid';
+  return fetch(url, options);
+}
+
 module.exports = {
   mkdirpAsync,
   rmrfAsync,
@@ -113,5 +122,6 @@ module.exports = {
   jsonStream,
   packedOut,
   packedIn,
+  fetch: fetchWrap,
   read
 };

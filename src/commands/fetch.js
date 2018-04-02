@@ -1,10 +1,9 @@
 'use strict';
 
 const fs = require('fs');
-const bhttp = require('bhttp');
 const path = require('path');
 const config = require('../config').config;
-const { mkdirpAsync, jsonStream } = require('../helpers');
+const { mkdirpAsync, fetch, jsonStream } = require('../helpers');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
@@ -12,12 +11,7 @@ async function run() {
   console.log('Fetching package list...');
 
   await mkdirpAsync(config.dir);
-  const source = await bhttp.get(registryUrl, {
-    stream: true,
-    headers: {
-      'user-agent': config.useragent || 'Gzemnid'
-    }
-  });
+  const source = (await fetch(registryUrl)).body;
   const stream = jsonStream(source, 'rows.*');
 
   const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));

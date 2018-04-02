@@ -3,22 +3,15 @@
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
-const bhttp = require('bhttp');
 const config = require('../config').config;
 const common = require('../common');
-const { toMap, mkdirpAsync, promiseEvent } = require('../helpers');
-
-const session = bhttp.session({
-  headers: {
-    'user-agent': config.useragent || 'Gzemnid'
-  }
-});
+const { toMap, mkdirpAsync, fetch, promiseEvent } = require('../helpers');
 
 async function downloadOne(url, file) {
   console.log(`Downloading: ${file}...`);
   const out = path.join(config.dir, 'meta/', file);
   const tmp = `${out}.tmp`;
-  const response = await session.get(url, { stream: true });
+  const response = (await fetch(url)).body;
   const write = fs.createWriteStream(tmp);
   response.pipe(write);
   await promiseEvent(write, 'finish');
