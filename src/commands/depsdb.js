@@ -9,7 +9,12 @@ const { read, jsonStream, promiseEvent } = require('../helpers');
 async function plain() {
   const current = await fs.readdir(path.join(config.dir, 'meta/'));
 
-  const out = fs.createWriteStream(path.join(config.dir, 'deps.json'));
+  console.log('Dependencies: cleaning up...');
+  const outdir = path.join(config.dir, 'deps/');
+  await fs.rmrf(outdir);
+  await fs.mkdirp(outdir);
+
+  const out = fs.createWriteStream(path.join(outdir, 'deps.json'));
   out.write('{\n');
   let count = 0;
   for (const file of current) {
@@ -50,7 +55,7 @@ async function plain() {
 }
 
 async function resolved() {
-  const data = await read('deps.json');
+  const data = await read('deps/deps.json');
 
   const matchVersion = (name, spec) => {
     if (!data[name])
@@ -110,7 +115,7 @@ async function resolved() {
   console.log('Normalization complete');
 
   count = 0;
-  const out = fs.createWriteStream(path.join(config.dir, 'deps-resolved.json'));
+  const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-resolved.json'));
   out.write('{\n');
   for (const name in data) {
     const versions = data[name];
@@ -137,7 +142,7 @@ async function resolved() {
 }
 
 async function nested() {
-  const data = await read('deps-resolved.json');
+  const data = await read('deps/deps-resolved.json');
 
   const build = (name, version, depth = 0) => {
     if (!version)
@@ -166,7 +171,7 @@ async function nested() {
   };
 
   let count = 0;
-  const out = fs.createWriteStream(path.join(config.dir, 'deps-nested.json'));
+  const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.json'));
   out.write('{\n');
   for (const name in data) {
     const version = data[name]._latest;
@@ -186,10 +191,10 @@ async function nested() {
 async function stats() {
   const info = await read('stats.json');
 
-  const out = fs.createWriteStream(path.join(config.dir, 'deps-nested.txt'));
+  const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.txt'));
 
   let count = 0;
-  const stream = jsonStream('deps-nested.json', '$*');
+  const stream = jsonStream('deps/deps-nested.json', '$*');
   out.on('drain', () => stream.resume());
   stream.on('data', row => {
     const weight = info[row.key] || '?';
