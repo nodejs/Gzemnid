@@ -14,7 +14,7 @@ async function downloadOne(url, file) {
   const response = (await fetch(url)).body;
   const write = fs.createWriteStream(tmp);
   response.pipe(write);
-  await promiseEvent(write, 'finish');
+  await promiseEvent(write, 'close');
   await fs.renameAsync(tmp, out);
 }
 

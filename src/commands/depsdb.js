@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const config = require('../config').config;
 const semver = require('semver');
-const { read, jsonStream } = require('../helpers');
+const { read, jsonStream, promiseEvent } = require('../helpers');
 
 async function plain() {
   const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
@@ -44,7 +44,8 @@ async function plain() {
     }
   }
   out.write('}\n');
-  await out.endAsync();
+  out.end();
+  await promiseEvent(out, 'close');
   console.log(`Total: ${count}.`);
   console.log('Dependencies complete.');
 }
@@ -131,7 +132,8 @@ async function resolved() {
     if (++count % 1000 === 0) console.log(`Cleanup ${count}...`);
   }
   out.write('}\n');
-  await out.endAsync();
+  out.end();
+  await promiseEvent(out, 'close');
   console.log('Cleanup complete');
 }
 
@@ -176,7 +178,8 @@ async function nested() {
     if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
   }
   out.write('\n}\n');
-  await out.endAsync();
+  out.end();
+  await promiseEvent(out, 'close');
   console.log('Dump complete');
 }
 
@@ -194,9 +197,9 @@ async function stats() {
   });
 
   await stream.promise;
-
+  out.end();
+  await promiseEvent(out, 'close');
   console.log(`Total: ${count}.`);
-  await out.endAsync();
 }
 
 async function run() {

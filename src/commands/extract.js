@@ -79,7 +79,8 @@ async function slimCode(ext, outdir, tgz, slim) {
     });
     await promiseEvent(stream);
   }
-  await out.endAsync();
+  out.end();
+  await promiseEvent(out, 'close');
 }
 
 function getAST(code, ext) {
@@ -120,7 +121,7 @@ async function slimAST(ext, outdir, tgz, slim) {
   }
   out.write('\n}\n');
   out.end();
-  await promiseEvent(out);
+  await promiseEvent(out, 'close');
 }
 
 async function partial(tgz, rebuild) {
@@ -309,7 +310,8 @@ async function totals() {
   for (const tgz of current) {
     out.write(`${tgz}\n`);
   }
-  await out.endAsync();
+  out.end();
+  await promiseEvent(out, 'close');
   console.log(`Totals: packages.txt complete, ${current.length} packages.`);
 
   console.log('Totals: processing partials...');
