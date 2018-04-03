@@ -20,6 +20,7 @@ async function run(filename) {
   out.write('[\n');
 
   let count = 0;
+  out.on('drain', () => stream.resume());
   stream.on('data', data => {
     if (data.id !== data.key || data.id !== data.value.name) {
       console.log('UNEXPECTED: ', JSON.stringify({
@@ -46,7 +47,8 @@ async function run(filename) {
     if (count > 0) {
       out.write(',\n');
     }
-    out.write(JSON.stringify(info));
+    const ready = out.write(JSON.stringify(info));
+    if (!ready) stream.pause();
 
     count++;
     if (count % 1000 === 0) {
