@@ -146,35 +146,35 @@ async function resolved() {
   console.log('Cleanup complete');
 }
 
+function nestedOne(data, name, version, depth = 0) {
+  if (!version)
+    return [];
+  const key = [name, version].join('@');
+  const versions = data.get(name);
+  if (!versions || !versions[version])
+    return [key, '?'];
+  const deps = versions[version];
+  if (Array.isArray(deps))
+    return deps;
+  versions[version] = []; // Recursive protection
+  let normal = [key];
+  for (const dep in deps) {
+    normal = normal.concat(nestedOne(data, dep, deps[dep], depth + 1));
+    normal.sort();
+    let last;
+    normal = normal.filter(x => {
+      const ok = last !== x;
+      last = x;
+      return ok;
+    });
+  }
+  versions[version] = depth > 2 ? normal : deps;
+  return normal;
+}
+
 async function nested() {
   console.log('Reading deps-resolved.json...');
   const data = await readMap('deps/deps-resolved.json');
-
-  const build = (name, version, depth = 0) => {
-    if (!version)
-      return [];
-    const key = [name, version].join('@');
-    const versions = data.get(name);
-    if (!versions || !versions[version])
-      return [key, '?'];
-    const deps = versions[version];
-    if (Array.isArray(deps))
-      return deps;
-    versions[version] = []; // Recursive protection
-    let normal = [key];
-    for (const dep in deps) {
-      normal = normal.concat(build(dep, deps[dep], depth + 1));
-      normal.sort();
-      let last;
-      normal = normal.filter(x => {
-        const ok = last !== x;
-        last = x;
-        return ok;
-      });
-    }
-    versions[version] = depth > 2 ? normal : deps;
-    return normal;
-  };
 
   console.log('Dumping nested dependencies...');
   let count = 0;
@@ -182,7 +182,7 @@ async function nested() {
   out.write('{\n');
   for (const [name, info] of data) {
     const version = info._latest;
-    const deps = await build(name, version);
+    const deps = await nestedOne(data, name, version);
     if (count > 0)
       out.write(',\n');
     const ready = out.write(`${JSON.stringify(name)}: ${JSON.stringify(deps)}`);
