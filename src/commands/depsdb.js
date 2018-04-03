@@ -174,8 +174,9 @@ async function nested() {
     const deps = await build(name, version);
     if (count > 0)
       out.write(',\n');
-    await out.writeAsync(`${JSON.stringify(name)}: ${JSON.stringify(deps)}`);
+    const ready = out.write(`${JSON.stringify(name)}: ${JSON.stringify(deps)}`);
     if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
+    if (!ready) await promiseEvent(out, 'drain');
   }
   out.write('\n}\n');
   out.end();
@@ -190,10 +191,12 @@ async function stats() {
 
   let count = 0;
   const stream = jsonStream('deps-nested.json', '$*');
+  out.on('drain', () => stream.resume());
   stream.on('data', row => {
     const weight = info[row.key] || '?';
-    out.writeAsync(`${weight}\t${row.key}: ${JSON.stringify(row.value)}\n`);
+    const ready = out.write(`${weight}\t${row.key}: ${JSON.stringify(row.value)}\n`);
     if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
+    if (!ready) stream.pause();
   });
 
   await stream.promise;
