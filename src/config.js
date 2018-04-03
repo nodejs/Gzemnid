@@ -1,8 +1,7 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const fs = require('./fs');
 
 const config = {};
 const basedir = path.join(__dirname, '../');
@@ -21,7 +20,7 @@ function configMerge(a, b) {
 }
 
 async function read(filepath) {
-  return await fs.readFileAsync(path.join(basedir, filepath), 'utf8')
+  return await fs.readFile(path.join(basedir, filepath), 'utf8')
     .catch(() => 'null')
     .then(JSON.parse);
 }

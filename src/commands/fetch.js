@@ -1,16 +1,16 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
+const fs = require('../fs');
 const config = require('../config').config;
-const { mkdirpAsync, fetch, jsonStream } = require('../helpers');
+const { fetch, jsonStream } = require('../helpers');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
 async function run(filename) {
   console.log('Fetching package list...');
 
-  await mkdirpAsync(config.dir);
+  await fs.mkdirp(config.dir);
   const source = filename
     ? path.resolve(filename)
     : (await fetch(registryUrl)).body;

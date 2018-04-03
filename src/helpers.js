@@ -1,30 +1,12 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
-const child_process = Promise.promisifyAll(require('child_process'));
-const mkdirpAsync = Promise.promisify(require('mkdirp'));
+const fs = require('fs');
 const readline = require('readline');
 const JSONStream = require('JSONStream');
 const path = require('path');
 const fetch = require('node-fetch');
 const lz4 = require('lz4');
 const config = require('./config').config;
-
-async function rmrfAsync(dir) {
-  await child_process.execFileAsync('rm', ['-rf', dir]);
-}
-
-async function copyAsync(inFile, outFile) {
-  await new Promise((accept, reject) => {
-    const input = fs.createReadStream(inFile);
-    input.on('error', reject);
-    const output = fs.createWriteStream(outFile);
-    output.on('error', reject);
-    output.on('finish', accept);
-    input.pipe(output);
-  });
-}
 
 function toMap(arr, value = false) {
   const map = new Map();
@@ -73,7 +55,7 @@ function jsonStream(file, type = '*') {
 
 function jsonLines(file) {
   const source = sourceFile(file);
-  const parser = readline.createInterface({  input: source });
+  const parser = readline.createInterface({ input: source });
   let errors = 0;
   let lines = 0;
   parser.on('line', line => {
@@ -139,9 +121,6 @@ function fetchWrap(url, opts = {}) {
 }
 
 module.exports = {
-  mkdirpAsync,
-  rmrfAsync,
-  copyAsync,
   toMap,
   readlines,
   promiseEvent,

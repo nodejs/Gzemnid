@@ -1,20 +1,19 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const fs = require('../fs');
 const config = require('../config').config;
 const semver = require('semver');
 const { read, jsonStream, promiseEvent } = require('../helpers');
 
 async function plain() {
-  const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
+  const current = await fs.readdir(path.join(config.dir, 'meta/'));
 
   const out = fs.createWriteStream(path.join(config.dir, 'deps.json'));
   out.write('{\n');
   let count = 0;
   for (const file of current) {
-    const data = JSON.parse(await fs.readFileAsync(path.join(config.dir, 'meta/', file)));
+    const data = JSON.parse(await fs.readFile(path.join(config.dir, 'meta/', file)));
     if (!data || !data.versions) {
       console.error(`Versions not defined for ${file}!`);
       continue;

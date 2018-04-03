@@ -1,8 +1,7 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const fs = require('./fs');
 const { config } = require('./config');
 const { jsonLines } = require('./helpers');
 const fetch = require('./commands/fetch');
@@ -12,7 +11,7 @@ async function listInfo(callback, initial = true) {
 
   try {
     const filepath = path.join(config.dir, file);
-    const stats = await fs.statAsync(filepath);
+    const stats = await fs.stat(filepath);
     console.log(`Package list version: ${new Date(stats.mtime)}.`);
     if (Date.now() - stats.mtime > 24 * 60 * 60 * 1000) {
       console.warn(`

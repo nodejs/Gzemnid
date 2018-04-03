@@ -1,11 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const fs = require('../fs');
 const config = require('../config').config;
 const common = require('../common');
-const { readlines, toMap, mkdirpAsync, fetch, promiseEvent } = require('../helpers');
+const { readlines, toMap, fetch, promiseEvent } = require('../helpers');
 
 async function downloadOne(url, file) {
   console.log(`Downloading: ${file}...`);
@@ -15,16 +14,16 @@ async function downloadOne(url, file) {
   const write = fs.createWriteStream(tmp);
   response.pipe(write);
   await promiseEvent(write, 'close');
-  await fs.renameAsync(tmp, out);
+  await fs.rename(tmp, out);
 }
 
 async function run() {
-  await mkdirpAsync(path.join(config.dir, 'current/'));
+  await fs.mkdirp(path.join(config.dir, 'current/'));
 
   const broken = new Set(await readlines(path.join(config.basedir, 'data/brokenurls.txt')));
   const blacklist = new Set(await readlines(path.join(config.basedir, 'data/blacklist.txt')));
   console.log('Reading packages directory...');
-  const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+  const current = await fs.readdir(path.join(config.dir, 'current/'));
   const map = toMap(current);
 
   const queue = [];
@@ -79,9 +78,9 @@ async function run() {
   for (const [file, keep] of map) {
     if (keep) continue;
     if (moved === 0) {
-      await mkdirpAsync(path.join(config.dir, 'outdated/'));
+      await fs.mkdirp(path.join(config.dir, 'outdated/'));
     }
-    await fs.renameAsync(
+    await fs.rename(
       path.join(config.dir, 'current/', file),
       path.join(config.dir, 'outdated/', file)
     );

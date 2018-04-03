@@ -1,11 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const fs = require('../fs');
 const config = require('../config').config;
 const common = require('../common');
-const { toMap, mkdirpAsync, fetch, promiseEvent } = require('../helpers');
+const { toMap, fetch, promiseEvent } = require('../helpers');
 
 async function downloadOne(url, file) {
   console.log(`Downloading: ${file}...`);
@@ -15,13 +14,13 @@ async function downloadOne(url, file) {
   const write = fs.createWriteStream(tmp);
   response.pipe(write);
   await promiseEvent(write, 'close');
-  await fs.renameAsync(tmp, out);
+  await fs.rename(tmp, out);
 }
 
 async function run() {
-  await mkdirpAsync(path.join(config.dir, 'meta/'));
+  await fs.mkdirp(path.join(config.dir, 'meta/'));
   console.log('Reading meta directory...');
-  const current = await fs.readdirAsync(path.join(config.dir, 'meta/'));
+  const current = await fs.readdir(path.join(config.dir, 'meta/'));
   const map = toMap(current);
 
   const queue = [];
@@ -57,9 +56,9 @@ async function run() {
   for (const [file, keep] of map) {
     if (keep) continue;
     if (moved === 0) {
-      await mkdirpAsync(path.join(config.dir, 'meta.old/'));
+      await fs.mkdirp(path.join(config.dir, 'meta.old/'));
     }
-    await fs.renameAsync(
+    await fs.rename(
       path.join(config.dir, 'meta/', file),
       path.join(config.dir, 'meta.old/', file)
     );

@@ -1,16 +1,15 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
+const util = require('util');
+const child_process = require('child_process');
+const fs = require('../fs');
 const config = require('../config').config;
-const child_process = Promise.promisifyAll(require('child_process'));
 const readline = require('readline');
 const babylon = require('babylon');
-const {
-  mkdirpAsync, readlines, rmrfAsync, copyAsync, promiseEvent,
-  packedOut, packedIn
-} = require('../helpers');
+const { readlines, promiseEvent, packedOut, packedIn } = require('../helpers');
+
+const execFile = util.promisify(child_process.execFile);
 
 const extensions = [
   //'.php', '.json', '.txt',
@@ -51,12 +50,13 @@ async function loadExcluded() {
 }
 
 async function listTar(file) {
-  const tar = await child_process.execFileAsync(
+  const tar = await execFile(
     'tar',
     ['--list', '--warning=no-unknown-keyword', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
-  return tar.split('\n')
+  return tar.stdout
+            .split('\n')
             .filter(x => !!x)
             .filter(x => x !== 'package')
             .sort();
@@ -111,7 +111,7 @@ async function slimAST(ext, outdir, tgz, slim) {
   let count = 0;
   for (const entry of entries) {
     const filepath = path.join(config.dir, 'tmp', entry);
-    const code = await fs.readFileAsync(filepath, 'utf-8');
+    const code = await fs.readFile(filepath, 'utf-8');
     const ast = getAST(code, ext);
     if (count !== 0) {
       out.write(',');
@@ -138,7 +138,7 @@ async function partial(tgz, rebuild) {
     }
   }
 
-  await mkdirpAsync(outdir);
+  await fs.mkdirp(outdir);
 
   if (!files) {
     const lines = await listTar(file);
@@ -147,10 +147,10 @@ async function partial(tgz, rebuild) {
     }
     files = lines.map(x => x.replace(/[^/]*\//, ''))
                  .map(x => `${tgz}/${x}`);
-    await fs.writeFileAsync(path.join(outdir, 'files.txt'), files.join('\n'));
+    await fs.writeFile(path.join(outdir, 'files.txt'), files.join('\n'));
     // TODO: rebuild new extensions on extensions list changes
     for (const ext of extensions) {
-      await fs.writeFileAsync(
+      await fs.writeFile(
         path.join(outdir, `files${ext}.txt`),
         files.filter(entry => entry.endsWith(ext)).join('\n')
       );
@@ -159,16 +159,16 @@ async function partial(tgz, rebuild) {
 
   const excluded = await loadExcluded();
   const slim = files.filter(entry => !excluded.some(rexp => rexp.test(entry)));
-  await fs.writeFileAsync(path.join(outdir, 'slim.files.txt'), slim.join('\n'));
+  await fs.writeFile(path.join(outdir, 'slim.files.txt'), slim.join('\n'));
   for (const ext of extensions) {
-    await fs.writeFileAsync(
+    await fs.writeFile(
       path.join(outdir, `slim.files${ext}.txt`),
       slim.filter(entry => entry.endsWith(ext)).join('\n')
     );
   }
 
   const tmp = path.join(config.dir, 'tmp/', tgz);
-  await mkdirpAsync(tmp);
+  await fs.mkdirp(tmp);
   const args = [
     '--strip-components=1',
     '--warning=no-unknown-keyword',
@@ -182,14 +182,14 @@ async function partial(tgz, rebuild) {
       args.push(`*${ext}`);
     }
   }
-  await child_process.execFileAsync('tar', args, {
+  await execFile('tar', args, {
     cwd: tmp,
     stdio: 'ignore',
     maxBuffer: 50 * 1024 * 1024
   });
 
   // TODO: only if not exists
-  await copyAsync(
+  await fs.copy(
     path.join(tmp, 'package.json'),
     path.join(outdir, 'package.json')
   );
@@ -202,7 +202,7 @@ async function partial(tgz, rebuild) {
     await slimAST('.js', outdir, tgz, slim);
   }
 
-  await rmrfAsync(tmp);
+  await fs.rmrf(tmp);
 }
 
 async function partials(subcommand, single) {
@@ -210,11 +210,11 @@ async function partials(subcommand, single) {
     throw new Error(`Partials: unexpected command: ${subcommand}`);
   }
   const rebuild = subcommand === 'rebuild';
-  await mkdirpAsync(path.join(config.dir, 'partials/'));
+  await fs.mkdirp(path.join(config.dir, 'partials/'));
   console.log('Reading packages directory...');
-  const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+  const current = await fs.readdir(path.join(config.dir, 'current/'));
   console.log('Reading partials directory...');
-  const present = await fs.readdirAsync(path.join(config.dir, 'partials/'));
+  const present = await fs.readdir(path.join(config.dir, 'partials/'));
   const currentSet = new Set(current);
   const presentSet = new Set(present);
   let removed = 0;
@@ -222,7 +222,7 @@ async function partials(subcommand, single) {
     if (single && tgz !== single) continue;
     if (currentSet.has(tgz)) continue;
     const dir = path.join(config.dir, 'partials', tgz);
-    await rmrfAsync(dir);
+    await fs.rmrf(dir);
     removed++;
     if (removed % 10000 === 0) {
       console.log(`Partials: removing ${removed}...`);
@@ -230,8 +230,8 @@ async function partials(subcommand, single) {
   }
   console.log(`Partials: removed ${removed}.`);
   const tmp = path.join(config.dir, 'tmp/');
-  await rmrfAsync(tmp);
-  await mkdirpAsync(tmp);
+  await fs.rmrf(tmp);
+  await fs.mkdirp(tmp);
   let built = 0;
   let errors = 0;
   const total = currentSet.size - presentSet.size + removed;
@@ -244,8 +244,8 @@ async function partials(subcommand, single) {
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
       errors++;
-      await rmrfAsync(path.join(config.dir, 'partials/', tgz));
-      await rmrfAsync(path.join(config.dir, 'tmp/', tgz));
+      await fs.rmrf(path.join(config.dir, 'partials/', tgz));
+      await fs.rmrf(path.join(config.dir, 'tmp/', tgz));
       continue;
     }
     built++;
@@ -254,7 +254,7 @@ async function partials(subcommand, single) {
     }
   }
   console.log(`Partials: built ${built}, errors: ${errors}.`);
-  await rmrfAsync(tmp);
+  await fs.rmrf(tmp);
 }
 
 async function totalsAST(available) {
@@ -300,11 +300,11 @@ async function totalsAST(available) {
 async function totals() {
   console.log('Totals: cleaning up...');
   const outdir = path.join(config.dir, 'out/');
-  await rmrfAsync(outdir);
-  await mkdirpAsync(outdir);
+  await fs.rmrf(outdir);
+  await fs.mkdirp(outdir);
 
   console.log('Totals: building packages list...');
-  const current = await fs.readdirAsync(path.join(config.dir, 'current/'));
+  const current = await fs.readdir(path.join(config.dir, 'current/'));
   current.sort();
   const out = fs.createWriteStream(path.join(outdir, 'packages.txt'));
   for (const tgz of current) {
@@ -315,7 +315,7 @@ async function totals() {
   console.log(`Totals: packages.txt complete, ${current.length} packages.`);
 
   console.log('Totals: processing partials...');
-  const available = await fs.readdirAsync(path.join(config.dir, 'partials/'));
+  const available = await fs.readdir(path.join(config.dir, 'partials/'));
   available.sort();
   console.log(`Totals: found ${available.length} partials.`);
 

@@ -1,7 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
+const fs = require('../fs');
 const path = require('path');
 const config = require('../config').config;
 const common = require('../common');
@@ -71,7 +70,7 @@ async function fetchStats(group, info) {
 
 async function update() {
   const file = path.join(config.dir, 'stats.json');
-  const data = await fs.readFileAsync(file)
+  const data = await fs.readFile(file)
     .then(JSON.parse)
     .catch(() => ({}));
 
@@ -97,13 +96,13 @@ async function update() {
     }
     const saved = info.processed + info.total - info.needed;
     console.log(`Processed: ${info.processed}/${info.needed}, saved: ${saved}/${info.total}.`);
-    await fs.writeFileAsync(file, JSON.stringify(data, undefined, 1));
+    await fs.writeFile(file, JSON.stringify(data, undefined, 1));
   }
 }
 
 async function rebuild() {
   const file = path.join(config.dir, 'stats.json');
-  await fs.unlinkAsync(file).catch(() => ({}));
+  await fs.unlink(file).catch(() => ({}));
   await update();
 }
 
