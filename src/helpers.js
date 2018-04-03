@@ -107,12 +107,12 @@ function packedIn(file, compress = true) {
   return stream.pipe(encoder);
 }
 
-async function read(file, type = '$*') {
-  const data = {};
+async function readMap(file, type = '$*') {
+  const data = new Map();
   let count = 0;
   const stream = jsonStream(file, type);
   stream.on('data', obj => {
-    data[obj.key] = obj.value;
+    data.set(obj.key, obj.value);
     if (++count % 10000 === 0) console.log(`Read ${count}...`);
   });
   await stream.promise;
@@ -137,5 +137,5 @@ module.exports = {
   packedOut,
   packedIn,
   fetch: fetchWrap,
-  read
+  readMap
 };

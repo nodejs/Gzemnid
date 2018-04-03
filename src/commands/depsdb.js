@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('../fs');
 const config = require('../config').config;
 const semver = require('semver');
-const { read, jsonStream, promiseEvent } = require('../helpers');
+const { readMap, jsonStream, promiseEvent } = require('../helpers');
 
 async function plain() {
   console.log('Dependencies: cleaning up...');
@@ -58,17 +58,18 @@ async function plain() {
 
 async function resolved() {
   console.log('Reading deps.json...');
-  const data = await read('deps/deps.json');
+  const data = await readMap('deps/deps.json');
 
   const matchVersion = (name, spec) => {
-    if (!data[name])
+    if (!data.has(name))
       return undefined;
 
-    const latest = data[name]._latest;
+    const info = data.get(name);
+    const latest = info._latest;
     if (spec === 'latest' || spec === '*' || semver.satisfies(latest, spec))
       return latest;
 
-    return Object.keys(data[name])
+    return Object.keys(info)
       .filter(key => key[0] !== '_')
       .sort(semver.rcompare)
       .find(version => semver.satisfies(version, spec));
@@ -83,7 +84,7 @@ async function resolved() {
     normalized.add(key);
     if (normalizedExtra.has(key))
       return;
-    const info = data[name];
+    const info = data.get(name);
     if (typeof info[version] === 'string') {
       const equivKey = [name, info[version]].join('-');
       info[version] = info[info[version]];
@@ -112,8 +113,8 @@ async function resolved() {
 
   console.log('Normalizing dependencies...');
   let count = 0;
-  for (const name in data) {
-    normalize(name, data[name]._latest);
+  for (const [name, info] of data) {
+    normalize(name, info._latest);
     if (++count % 1000 === 0) console.log(`Normalized ${count}...`);
   }
   console.log('Normalization complete');
@@ -122,8 +123,7 @@ async function resolved() {
   count = 0;
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-resolved.json'));
   out.write('{\n');
-  for (const name in data) {
-    const versions = data[name];
+  for (const [name, versions] of data) {
     if (count > 0)
       out.write(',\n');
     out.write(`${JSON.stringify(name)}: {\n`);
@@ -148,13 +148,13 @@ async function resolved() {
 
 async function nested() {
   console.log('Reading deps-resolved.json...');
-  const data = await read('deps/deps-resolved.json');
+  const data = await readMap('deps/deps-resolved.json');
 
   const build = (name, version, depth = 0) => {
     if (!version)
       return [];
     const key = [name, version].join('@');
-    const versions = data[name];
+    const versions = data.get(name);
     if (!versions || !versions[version])
       return [key, '?'];
     const deps = versions[version];
@@ -180,8 +180,8 @@ async function nested() {
   let count = 0;
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.json'));
   out.write('{\n');
-  for (const name in data) {
-    const version = data[name]._latest;
+  for (const [name, info] of data) {
+    const version = info._latest;
     const deps = await build(name, version);
     if (count > 0)
       out.write(',\n');
@@ -197,7 +197,7 @@ async function nested() {
 
 async function stats() {
   console.log('Reading stats.json...');
-  const info = await read('stats.json');
+  const info = await readMap('stats.json');
 
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.txt'));
 
@@ -206,7 +206,7 @@ async function stats() {
   const stream = jsonStream('deps/deps-nested.json', '$*');
   out.on('drain', () => stream.resume());
   stream.on('data', row => {
-    const weight = info[row.key] || '?';
+    const weight = info.get(row.key) || '?';
     const ready = out.write(`${weight}\t${row.key}: ${JSON.stringify(row.value)}\n`);
     if (++count % 1000 === 0) console.log(`Dumped ${count}...`);
     if (!ready) stream.pause();
