@@ -34,6 +34,9 @@ async function main(argv) {
   commands[command][method](...argv);
 }
 
+process.on('exit', () => {
+  console.error(`RSS: ${process.memoryUsage().rss / (2 << 20)} MiB`);
+});
 process.on('SIGPIPE', () => process.exit());
 process.on('SIGTERM', () => process.exit());
 
