@@ -208,6 +208,7 @@ async function run() {
   await plain();
   await resolved();
   await nested();
+  await stats();
 }
 
 module.exports = {
