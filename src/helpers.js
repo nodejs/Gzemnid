@@ -59,7 +59,7 @@ function promiseEvent(obj, finish = 'end', error = 'error') {
 function jsonStream(file, type = '*') {
   let source;
   if (typeof file === 'string') {
-    const resolved = path.join(config.dir, file);
+    const resolved = path.resolve(config.dir, file);
     source = fs.createReadStream(resolved);
   } else {
     source = file;

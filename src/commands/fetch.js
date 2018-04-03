@@ -7,11 +7,13 @@ const { mkdirpAsync, fetch, jsonStream } = require('../helpers');
 
 const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
-async function run() {
+async function run(filename) {
   console.log('Fetching package list...');
 
   await mkdirpAsync(config.dir);
-  const source = (await fetch(registryUrl)).body;
+  const source = filename
+    ? path.resolve(filename)
+    : (await fetch(registryUrl)).body;
   const stream = jsonStream(source, 'rows.*');
 
   const out = fs.createWriteStream(path.join(config.dir, 'byField.info.json'));
