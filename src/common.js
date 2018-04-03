@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const { config } = require('./config');
-const { jsonStream } = require('./helpers');
+const { jsonLines } = require('./helpers');
 const fetch = require('./commands/fetch');
 
 async function listInfo(callback, initial = true) {
@@ -26,7 +26,7 @@ Warning: package list is older than 24 hours!
     return await listInfo(callback, false);
   }
 
-  const stream = jsonStream(file);
+  const stream = jsonLines(file);
   let total = 0;
   stream.on('data', info => {
     total++;

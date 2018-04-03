@@ -56,18 +56,44 @@ function promiseEvent(obj, finish = 'end', error = 'error') {
   });
 }
 
-function jsonStream(file, type = '*') {
-  let source;
+function sourceFile(file) {
   if (typeof file === 'string') {
     const resolved = path.resolve(config.dir, file);
-    source = fs.createReadStream(resolved);
-  } else {
-    source = file;
+    return fs.createReadStream(resolved);
   }
+  return file;
+}
 
+function jsonStream(file, type = '*') {
+  const source = sourceFile(file);
   const stream = source.pipe(JSONStream.parse(type));
   stream.promise = promiseEvent(stream);
   return stream;
+}
+
+function jsonLines(file) {
+  const source = sourceFile(file);
+  const parser = readline.createInterface({  input: source });
+  let errors = 0;
+  let lines = 0;
+  parser.on('line', line => {
+    const json = line.trim().replace(/,$/, '');
+    if (json.length === 0) return;
+    if (errors > 1)
+      parser.emit('error', new Error(`Write after second error: ${json}`));
+    if (json[0] === '{' && json[json.length - 1] === '}') {
+      parser.emit('data', JSON.parse(json));
+    } else {
+      errors++;
+      if (errors > 2)
+        parser.emit('error', new Error(`Invalid data: ${json}`));
+    }
+    lines++;
+    if (lines === 1 && errors < lines)
+      parser.emit('error', new Error(`Expected to fail: ${json}`));
+  });
+  parser.promise = promiseEvent(source);
+  return parser;
 }
 
 function packedOut(file, compress = true) {
@@ -120,6 +146,7 @@ module.exports = {
   readlines,
   promiseEvent,
   jsonStream,
+  jsonLines,
   packedOut,
   packedIn,
   fetch: fetchWrap,
