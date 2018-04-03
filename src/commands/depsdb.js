@@ -7,13 +7,15 @@ const semver = require('semver');
 const { read, jsonStream, promiseEvent } = require('../helpers');
 
 async function plain() {
-  const current = await fs.readdir(path.join(config.dir, 'meta/'));
-
   console.log('Dependencies: cleaning up...');
   const outdir = path.join(config.dir, 'deps/');
   await fs.rmrf(outdir);
   await fs.mkdirp(outdir);
 
+  console.log('Reading meta directory...');
+  const current = await fs.readdir(path.join(config.dir, 'meta/'));
+
+  console.log(`Found ${current.length} meta files...`);
   const out = fs.createWriteStream(path.join(outdir, 'deps.json'));
   out.write('{\n');
   let count = 0;
@@ -55,6 +57,7 @@ async function plain() {
 }
 
 async function resolved() {
+  console.log('Reading deps.json...');
   const data = await read('deps/deps.json');
 
   const matchVersion = (name, spec) => {
@@ -107,6 +110,7 @@ async function resolved() {
     }
   };
 
+  console.log('Normalizing dependencies...');
   let count = 0;
   for (const name in data) {
     normalize(name, data[name]._latest);
@@ -114,6 +118,7 @@ async function resolved() {
   }
   console.log('Normalization complete');
 
+  console.log('Cleaning up dependencies...');
   count = 0;
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-resolved.json'));
   out.write('{\n');
@@ -142,6 +147,7 @@ async function resolved() {
 }
 
 async function nested() {
+  console.log('Reading deps-resolved.json...');
   const data = await read('deps/deps-resolved.json');
 
   const build = (name, version, depth = 0) => {
@@ -170,6 +176,7 @@ async function nested() {
     return normal;
   };
 
+  console.log('Dumping nested dependencies...');
   let count = 0;
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.json'));
   out.write('{\n');
@@ -189,10 +196,12 @@ async function nested() {
 }
 
 async function stats() {
+  console.log('Reading stats.json...');
   const info = await read('stats.json');
 
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.txt'));
 
+  console.log('Dumping nested dependencies with stats...');
   let count = 0;
   const stream = jsonStream('deps/deps-nested.json', '$*');
   out.on('drain', () => stream.resume());
