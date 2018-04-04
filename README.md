@@ -130,28 +130,36 @@ The main script is invoked as `gzemnid command [subcommand]` (or `./gzemnid.js c
 where `[subcommand]` is optional.
 
 Here is the list of the current commands:
-  * `gzemnid fetch` — builds `byField.info.json`.
+  * `fetch` — builds `byField.info.json`.
     _Should take about 2 minutes._
-  * `gzemnid stats` — runs subcommand `rebuild`.
-    * `gzemnid stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in `byField.info.json`.
-    * `gzemnid stats update` — updates `stats.json` for only newly added packages, keeping the numbers for already present packages.
-  * `gzemnid meta` — builds `meta/` directory, downloading meta info for all packages present in `byField.info.json`. Outdated files that were present in the `meta/` directory are moved to `meta.old/`.
-  * `gzemnid depsdb` — runs subcommands `plain`, `resolved`, `nested`, `stats`,
-    * `gzemnid depsdb plain` — builds `deps/deps.json`. Requires `meta/` dir contents.
-    * `gzemnid depsdb resolved` — builds `deps/deps-resolved.json`. Requires `deps/deps.json`.
-    * `gzemnid depsdb nested` — builds `deps/deps-nested.json`.
+  * `stats` — runs subcommand `rebuild`.
+    * `stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in
+      `byField.info.json`.
+    * `stats update` — updates `stats.json` for only newly added packages, keeping the numbers for
+      already present packages.
+  * `meta` — builds `meta/` directory, downloading meta info for all packages present in
+    `byField.info.json`. Outdated files that were present in the `meta/` directory are moved to
+    `meta.old/`.
+  * `depsdb` — runs subcommands `plain`, `resolved`, `nested`, `stats`,
+    * `depsdb plain` — builds `deps/deps.json`. Requires `meta/` dir contents.
+    * `depsdb resolved` — builds `deps/deps-resolved.json`. Requires `deps/deps.json`.
+    * `depsdb nested` — builds `deps/deps-nested.json`.
       Requires `stats.json` and `deps/deps-resolved.json`.
       _Should take about 6 minutes._
-    * `gzemnid depsdb stats` — builds `deps/deps-nested.txt`.
+    * `depsdb stats` — builds `deps/deps-nested.txt`.
       Requires `stats.json` and `deps/deps-nested.json`.
       _Should take about 30 seconds._
-  * `gzemnid packages` — builds `current/` directory, downloading `latest` versions for all packages present in `byField.info.json`. Outdated files that were present in the `current/` directory are moved to `outdated/`.
-  * `gzemnid extract` — runs subcommands `partials`, `totals`,
-    * `gzemnid extract partials` —
-    * `gzemnid extract totals` —
-  * `gzemnid code search {regex}` — performs a code search over a specified regular expression using the pre-built dataset.
-  * `gzemnid ast execute {file.js}` — performs an AST search using the pre-built dataset. Example script — in `examples/ast_status.js`, execute with `gzemnid ast execute ./examples/ast_status.js`,
-  * `gzemnid server` — starts the web server providing the search API endpoints.
+  * `packages` — builds `current/` directory, downloading `latest` versions for all packages present
+    in `byField.info.json`. Outdated files that were present in the `current/` directory are moved
+    to `outdated/`.
+  * `extract` — runs subcommands `partials`, `totals`,
+    * `extract partials` —
+    * `extract totals` —
+  * `code search {regex}` — performs a code search over a specified regular expression using the
+    pre-built dataset.
+  * `ast execute {file.js}` — performs an AST search using the pre-built dataset. Example script
+    is located in `examples/ast_status.js`, run with `gzemnid ast execute ./examples/ast_status.js`.
+  * `server` — starts the web server providing the search API endpoints.
 
 Times are given for reference, could depend significantly on the internet connection speed and/or
 CPU speed, and increase over time with npm registry growth.
