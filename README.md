@@ -49,7 +49,8 @@ Example content: see <https://registry.npmjs.org/qmlweb>.
 
 _Notice: these files are updated only on `latest` version releases, so they might become stale when it comes to beta releases._
 
-Typical size is about 11 GiB, typical bootstrap time is quite long (could even take a day or two), but further updates are quite fast.
+Typical size is about 11 GiB, typical bootstrap time is quite long (should be under or about 10
+hours), but further updates are quite fast.
 
 Created via `gzemnid meta`.
 
@@ -61,7 +62,8 @@ Contains `latest` versions of all packages, one file per package.
 
 Files are named `${package_name}-${package_version}.tgz`.
 
-Typical size is currently 215 GiB (and growing), typical bootstrap time depends on your internet connection, further updates are quite fast.
+Typical size is currently 215 GiB (and growing), typical bootstrap time depends on your internet
+connection and time needed to download that amount of data, further updates are quite fast.
 
 Created via `gzemnid packages`.
 
