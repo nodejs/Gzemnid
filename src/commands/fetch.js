@@ -23,11 +23,13 @@ async function run(filename) {
   out.on('drain', () => stream.resume());
   stream.on('data', data => {
     if (data.id !== data.key || data.id !== data.value.name) {
-      console.log('UNEXPECTED: ', JSON.stringify({
-        id: data.id,
-        key: data.key,
-        'value.name': data.value.name
-      }));
+      console.log('Inconsistent data in registry, skipping package:',
+        JSON.stringify({
+          id: data.id,
+          key: data.key,
+          'value.name': data.value.name || null
+        })
+      );
       //console.log('received:', data);
       return;
     }
