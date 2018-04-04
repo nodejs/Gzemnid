@@ -68,6 +68,8 @@ async function slimCode(ext, outdir, tgz, slim) {
   const entries = slim.filter(entry => entry.endsWith(ext));
   for (const entry of entries) {
     const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
+    const resume = () => stream.resume();
+    out.on('drain', resume);
     let num = 0;
     readline.createInterface({
       input: stream
@@ -75,9 +77,11 @@ async function slimCode(ext, outdir, tgz, slim) {
       num++;
       if (line.length > 500) return;
       if (!/[^\s]/.test(line)) return;
-      out.write(`${entry}:${num}:${line}\n`);
+      const ready = out.write(`${entry}:${num}:${line}\n`);
+      if (!ready) stream.pause();
     });
     await promiseEvent(stream);
+    out.removeListener('drain', resume);
   }
   out.end();
   await promiseEvent(out, 'close');
@@ -116,7 +120,8 @@ async function slimAST(ext, outdir, tgz, slim) {
     if (count !== 0) {
       out.write(',');
     }
-    out.write(`\n ${JSON.stringify(entry)}: ${JSON.stringify(ast)}`);
+    const ready = out.write(`\n ${JSON.stringify(entry)}: ${JSON.stringify(ast)}`);
+    if (!ready) await promiseEvent(out, 'drain');
     count++;
   }
   out.write('\n}\n');
