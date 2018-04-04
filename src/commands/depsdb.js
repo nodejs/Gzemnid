@@ -199,11 +199,10 @@ async function stats() {
   console.log('Reading stats.json...');
   const info = await readMap('stats.json');
 
-  const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.txt'));
-
   console.log('Dumping nested dependencies with stats...');
   let count = 0;
   const stream = jsonStream('deps/deps-nested.json', '$*');
+  const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.txt'));
   out.on('drain', () => stream.resume());
   stream.on('data', row => {
     const weight = info.get(row.key) || '?';
