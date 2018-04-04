@@ -172,17 +172,36 @@ function nestedOne(data, name, version, depth = 0) {
   return normal;
 }
 
+async function sort(names) {
+  console.log('Reading stats.json...');
+  const stats = await readMap('stats.json');
+  console.log('Sorting packages...');
+  names.sort((a, b) => {
+    const aStat = stats.get(a);
+    const bStat = stats.get(b);
+    if (aStat && !bStat) return -1;
+    if (bStat && !aStat) return 1;
+    if (aStat > bStat) return -1;
+    if (bStat > aStat) return 1;
+    if (a > b) return 1;
+    if (b > a) return -1;
+    return 0;
+  });
+}
+
 async function nested() {
   console.log('Reading deps-resolved.json...');
   const data = await readMap('deps/deps-resolved.json');
+  const names = [...data.keys()];
+  await sort(names);
 
   console.log('Dumping nested dependencies...');
   let count = 0;
   const out = fs.createWriteStream(path.join(config.dir, 'deps/deps-nested.json'));
   out.write('{\n');
-  for (const [name, info] of data) {
-    const version = info._latest;
-    const deps = await nestedOne(data, name, version);
+  for (const name of names) {
+    const versions = data.get(name);
+    const deps = await nestedOne(data, name, versions._latest);
     if (count > 0)
       out.write(',\n');
     const ready = out.write(`${JSON.stringify(name)}: ${JSON.stringify(deps)}`);
