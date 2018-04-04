@@ -2,6 +2,7 @@
 *.log
 .eslintcache
 node_modules
+package-lock.json
 build
 private
 config.*.json
