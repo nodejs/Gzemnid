@@ -124,6 +124,8 @@ A plain file with nested deps and package downloads/month, one per line, in form
 79339925        debug: ["debug@3.1.0","ms@2.0.0"]
 ```
 
+Sorted by downloads/month.
+
 ## Commands
 
 The main script is invoked as `gzemnid command [subcommand]` (or `./gzemnid.js command [subcommand]`),
