@@ -98,6 +98,28 @@ async function update() {
     console.log(`Processed: ${info.processed}/${info.needed}, saved: ${saved}/${info.total}.`);
     await fs.writeFile(file, JSON.stringify(data, undefined, 1));
   }
+  console.log(`Writing sorted stats...`);
+  await fs.writeFile(file, sortStringify(data));
+  console.log(`Stats finished!`);
+}
+
+function sortStringify(stats) {
+  const names = Object.keys(stats);
+  names.sort((a, b) => {
+    const aStat = stats[a];
+    const bStat = stats[b];
+    if (aStat && !bStat) return -1;
+    if (bStat && !aStat) return 1;
+    if (aStat > bStat) return -1;
+    if (bStat > aStat) return 1;
+    if (a > b) return 1;
+    if (b > a) return -1;
+    return 0;
+  });
+  const out = names.map(name =>
+    ` ${JSON.stringify(name)}: ${JSON.stringify(stats[name])}`
+  );
+  return `{\n${out.join(',\n')}\n}`
 }
 
 async function rebuild() {
