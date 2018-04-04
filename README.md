@@ -138,7 +138,7 @@ Here is the list of the current commands:
       but you need to download `byField.json` manually from the registry to run that.
   * `stats` — runs subcommand `rebuild`.
     * `stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in
-      `byField.info.json`.
+      `byField.info.json`. _Should take about 25 minutes._
     * `stats update` — updates `stats.json` for only newly added packages, keeping the numbers for
       already present packages.
   * `meta` — builds `meta/` directory, downloading meta info for all packages present in
