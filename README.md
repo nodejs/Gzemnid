@@ -132,6 +132,8 @@ where `[subcommand]` is optional.
 Here is the list of the current commands:
   * `fetch` — builds `byField.info.json`.
     _Should take about 2 minutes._
+    * `fetch run byField.json` — builds `byField.info.json` locally without network connection,
+      but you need to download `byField.json` manually from the registry to run that.
   * `stats` — runs subcommand `rebuild`.
     * `stats rebuild` — rebuilds `stats.json`, downloading stats for all packages present in
       `byField.info.json`.
