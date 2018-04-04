@@ -32,6 +32,7 @@ Warning: package list is older than 24 hours!
     if (total % 50000 === 0) {
       console.log(`Reading: ${total}...`);
     }
+    if (info.scoped) return; // FIXME: process scoped packages
     callback(info);
   });
   await stream.promise;
