@@ -174,11 +174,11 @@ function nestedOne(data, name, version, depth = 0) {
 
 async function sort(names) {
   console.log('Reading stats.json...');
-  const stats = await readMap('stats.json');
+  const info = await readMap('stats.json');
   console.log('Sorting packages...');
   names.sort((a, b) => {
-    const aStat = stats.get(a);
-    const bStat = stats.get(b);
+    const aStat = info.get(a);
+    const bStat = info.get(b);
     if (aStat && !bStat) return -1;
     if (bStat && !aStat) return 1;
     if (aStat > bStat) return -1;
