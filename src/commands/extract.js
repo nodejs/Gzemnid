@@ -80,7 +80,7 @@ async function slimCode(ext, outdir, tgz, slim) {
       const ready = out.write(`${entry}:${num}:${line}\n`);
       if (!ready) stream.pause();
     });
-    await promiseEvent(stream);
+    await promiseEvent(stream, 'end');
     out.removeListener('drain', resume);
   }
   out.end();
@@ -286,7 +286,7 @@ async function totalsAST(available) {
         streams[file].write(streams[file].length === 1 ? '\n' : ',\n');
         streams[file].write(line.endsWith(',') ? line.slice(0, -1) : line);
       });
-      await promiseEvent(stream);
+      await promiseEvent(stream, 'end');
     }
     built++;
     if (built % 10000 === 0) {
@@ -297,7 +297,7 @@ async function totalsAST(available) {
   for (const file of filenames) {
     streams[file].write('\n}\n');
     streams[file].end();
-    promises.push(promiseEvent(streams[file]));
+    promises.push(promiseEvent(streams[file], 'close'));
   }
   await Promise.all(promises);
 }
@@ -343,7 +343,7 @@ async function totals() {
       stream.on('data', line => {
         streams[file].write(line);
       });
-      await promiseEvent(stream);
+      await promiseEvent(stream, 'end');
     }
     built++;
     if (built % 10000 === 0) {
@@ -357,7 +357,7 @@ async function totals() {
       streams[file].write('\n');
     }
     streams[file].end();
-    promises.push(promiseEvent(streams[file]));
+    promises.push(promiseEvent(streams[file], 'close'));
   }
   await Promise.all(promises);
   console.log(`Totals: processed ${built} partials.`);
