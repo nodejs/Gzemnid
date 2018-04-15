@@ -13,7 +13,7 @@ const execFile = util.promisify(child_process.execFile);
 
 const extensions = [
   //'.php', '.json', '.txt',
-  '.ts', '.coffee', '.js'
+  '.ts', '.coffee', '.js', '.mjs'
 ];
 
 let excludedLoaded;
@@ -94,6 +94,14 @@ function getAST(code, ext) {
     return 'minified';
   }
   switch (ext) {
+    case '.mjs':
+      try {
+        return babylon.parse(code, { sourceType: 'module' });
+      } catch (e) { /* ignore */ }
+      try {
+        return babylon.parse(code);
+      } catch (e) { /* ignore */ }
+      break;
     case '.js':
       try {
         return babylon.parse(code);
