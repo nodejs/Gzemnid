@@ -278,15 +278,20 @@ async function totalsAST(available) {
   for (const tgz of available) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
     for (const file of filenames) {
+      const out = streams[file];
       const stream = packedIn(path.join(tgzdir, file), config.extract.compress);
+      const resume = () => stream.resume();
+      out.on('drain', resume);
       readline.createInterface({
         input: stream
       }).on('line', line => {
         if (line === '{' || line === '}') return;
-        streams[file].write(streams[file].length === 1 ? '\n' : ',\n');
-        streams[file].write(line.endsWith(',') ? line.slice(0, -1) : line);
+        out.write(out.length === 1 ? '\n' : ',\n');
+        const ready = out.write(line.endsWith(',') ? line.slice(0, -1) : line);
+        if (!ready) stream.pause();
       });
       await promiseEvent(stream, 'end');
+      out.removeListener('drain', resume);
     }
     built++;
     if (built % 10000 === 0) {
@@ -338,12 +343,17 @@ async function totals() {
   for (const tgz of available) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
     for (const file of filenames) {
+      const out = streams[file];
       const filepath = path.join(tgzdir, file);
       const stream = fs.createReadStream(filepath);
+      const resume = () => stream.resume();
+      out.on('drain', resume);
       stream.on('data', line => {
-        streams[file].write(line);
+        const ready = out.write(line);
+        if (!ready) stream.pause();
       });
       await promiseEvent(stream, 'end');
+      out.removeListener('drain', resume);
     }
     built++;
     if (built % 10000 === 0) {
