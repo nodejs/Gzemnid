@@ -33,11 +33,12 @@ function readlines(file) {
 
 function promiseEvent(obj, finish = 'end', error = 'error') {
   return new Promise((accept, reject) => {
+    let rejectWrap = null;
     const acceptWrap = (...args) => {
       obj.removeListener(error, rejectWrap);
       accept(...args);
     };
-    const rejectWrap = (...args) => {
+    rejectWrap = (...args) => {
       obj.removeListener(finish, acceptWrap);
       reject(...args);
     };
