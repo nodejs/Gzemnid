@@ -129,6 +129,10 @@ async function slimAST(ext, outdir, tgz, slim) {
   await promiseEvent(out, 'close');
 }
 
+async function writeList(file, list) {
+  await fs.writeFile(file, `${list.join('\n')}\n`);
+}
+
 async function partial(tgz, rebuild) {
   const file = path.join(config.dir, 'current/', tgz);
   const outdir = path.join(config.dir, 'partials/', tgz);
@@ -152,23 +156,23 @@ async function partial(tgz, rebuild) {
     }
     files = lines.map(x => x.replace(/[^/]*\//, ''))
                  .map(x => `${tgz}/${x}`);
-    await fs.writeFile(path.join(outdir, 'files.txt'), files.join('\n'));
+    await writeList(path.join(outdir, 'files.txt'), files);
     // TODO: rebuild new extensions on extensions list changes
     for (const ext of extensions) {
-      await fs.writeFile(
+      await writeList(
         path.join(outdir, `files${ext}.txt`),
-        files.filter(entry => entry.endsWith(ext)).join('\n')
+        files.filter(entry => entry.endsWith(ext))
       );
     }
   }
 
   const excluded = await loadExcluded();
   const slim = files.filter(entry => !excluded.some(rexp => rexp.test(entry)));
-  await fs.writeFile(path.join(outdir, 'slim.files.txt'), slim.join('\n'));
+  await writeList(path.join(outdir, 'slim.files.txt'), slim);
   for (const ext of extensions) {
-    await fs.writeFile(
+    await writeList(
       path.join(outdir, `slim.files${ext}.txt`),
-      slim.filter(entry => entry.endsWith(ext)).join('\n')
+      slim.filter(entry => entry.endsWith(ext))
     );
   }
 
