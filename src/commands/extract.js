@@ -313,16 +313,18 @@ async function totals() {
   await fs.rmrf(outdir);
   await fs.mkdirp(outdir);
 
-  console.log('Totals: building packages list...');
-  const current = await fs.readdir(path.join(config.dir, 'current/'));
-  current.sort();
-  const out = fs.createWriteStream(path.join(outdir, 'packages.txt'));
-  for (const tgz of current) {
-    out.write(`${tgz}\n`);
+  {
+    console.log('Totals: building packages list...');
+    const current = await fs.readdir(path.join(config.dir, 'current/'));
+    current.sort();
+    const out = fs.createWriteStream(path.join(outdir, 'packages.txt'));
+    for (const tgz of current) {
+      out.write(`${tgz}\n`);
+    }
+    out.end();
+    await promiseEvent(out, 'close');
+    console.log(`Totals: packages.txt complete, ${current.length} packages.`);
   }
-  out.end();
-  await promiseEvent(out, 'close');
-  console.log(`Totals: packages.txt complete, ${current.length} packages.`);
 
   console.log('Totals: processing partials...');
   const available = await fs.readdir(path.join(config.dir, 'partials/'));
