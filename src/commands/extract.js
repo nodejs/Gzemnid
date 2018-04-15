@@ -7,7 +7,9 @@ const fs = require('../fs');
 const config = require('../config').config;
 const readline = require('readline');
 const babylon = require('babylon');
-const { readlines, promiseEvent, packedOut, packedIn } = require('../helpers');
+const {
+  readMap, readlines, promiseEvent, packedOut, packedIn
+} = require('../helpers');
 
 const execFile = util.promisify(child_process.execFile);
 
@@ -393,6 +395,79 @@ async function totals() {
   console.log('Totals: done!');
 }
 
+// TODO:
+//  * Remove tests/exmaples: grep -vE '(/(te?sts?|spec|examples?)(/.*)?|[.-]test)\.(js|coffee|ts):'
+//  * Remove lines that are clearly comments: grep -vE '\.(js|coffee|ts):[0-9]+:\s*//'
+//  * Warn on missing partials
+async function topcode(arg = 1000) {
+  const limit = parseInt(arg, 10);
+  console.log(`Topcode: building code from packages with >= ${limit} d/m...`);
+
+  console.log('Topcode: processing partials...');
+  const available = await fs.readdir(path.join(config.dir, 'partials/'));
+  console.log(`Topcode: found ${available.length} partials.`);
+
+  console.log('Topcode: reading stats.json...');
+  const info = await readMap('stats.json');
+  console.log(`Topcode: found ${info.size} packages in stats.`);
+
+  console.log('Topcode: filtering partials...');
+  const regex = /^(.*)[-@](v?\d+\.\d+\.\d+.*?)\.tgz$/;
+  const packages = available.map(tgz => {
+    const match = tgz.match(regex);
+    if (!match) throw new Error(`Unrecognized name: ${tgz}`);
+    const name = match[1];
+    const dm = info.get(name);
+    return { tgz, name, dm };
+  }).filter(({ dm }) => dm > limit);
+  console.log('Topcode: sorting partials...');
+  packages.sort((a, b) => {
+    if (a.dm && !b.dm) return -1;
+    if (b.dm && !a.dm) return 1;
+    if (a.dm > b.dm) return -1;
+    if (b.dm > a.dm) return 1;
+    if (a.name > b.name) return 1;
+    if (b.name > a.name) return -1;
+    return 0;
+  });
+  console.log(`Topcode: prepared ${packages.length} partials...`);
+
+  console.log('Topcode: starting...');
+  const outdir = path.join(config.dir, 'out/');
+  const outfile = path.join(outdir, `slim.topcode.${limit}.txt`);
+  await fs.rmrf(outfile);
+  await fs.mkdirp(outdir);
+
+  const out = packedOut(outfile, config.extract.compress);
+  let built = 0;
+  for (const { tgz, name, dm } of packages) {
+    const tgzdir = path.join(config.dir, 'partials/', tgz);
+    for (const ext of extensions) {
+      const filepath = path.join(tgzdir, `slim.code${ext}.txt`);
+      const stream = fs.createReadStream(filepath);
+      const resume = () => stream.resume();
+      out.on('drain', resume);
+      readline.createInterface({
+        input: stream
+      }).on('line', line => {
+        const ready = out.write(`${dm}\t${line}\n`);
+        if (!ready) stream.pause();
+      });
+      await promiseEvent(stream, 'end');
+      out.removeListener('drain', resume);
+    }
+    built++;
+    if (built % 100 === 0) {
+      console.log(`Topcode: building ${built} / ${packages.length}...`);
+    }
+  }
+  out.end();
+  await promiseEvent(out);
+
+  console.log(`Topcode: processed ${built} partials.`);
+  console.log('Topcode: done!');
+}
+
 async function run() {
   await partials();
   await totals();
@@ -401,5 +476,6 @@ async function run() {
 module.exports = {
   run,
   partials,
+  topcode,
   totals
 };
