@@ -3,6 +3,7 @@ old_node_modules
 _node_modules
 .node_modules
 .yarn-cache
+.yarn_cache
 node_modules_prev
 .node_modules.ember-try
 bower_components
