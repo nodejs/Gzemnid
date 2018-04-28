@@ -462,7 +462,7 @@ async function topcode(arg = 1000) {
     }
   }
   out.end();
-  await promiseEvent(out);
+  await promiseEvent(out, 'close');
 
   console.log(`Topcode: processed ${built} partials.`);
   console.log('Topcode: done!');
