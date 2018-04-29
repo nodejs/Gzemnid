@@ -31,7 +31,7 @@ async function main(argv) {
   if (!commands[command][method]) {
     throw new Error(`No such method of command ${command}: ${method}.`);
   }
-  commands[command][method](...argv);
+  return commands[command][method](...argv);
 }
 
 process.on('exit', () => {
