@@ -11,20 +11,9 @@ async function rmrf(dir) {
   await execFile('rm', ['-rf', dir]);
 }
 
-async function copy(inFile, outFile) {
-  await new Promise((accept, reject) => {
-    const input = fs.createReadStream(inFile);
-    input.on('error', reject);
-    const output = fs.createWriteStream(outFile);
-    output.on('error', reject);
-    output.on('finish', accept);
-    input.pipe(output);
-  });
-}
-
 module.exports = {
   rmrf,
-  copy,
+  copyFile: util.promisify(fs.copyFile),
   createReadStream: fs.createReadStream,
   createWriteStream: fs.createWriteStream,
   stat: util.promisify(fs.stat),

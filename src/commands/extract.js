@@ -208,7 +208,7 @@ async function partial(tgz, rebuild) {
   });
 
   // TODO: only if not exists
-  await fs.copy(
+  await fs.copyFile(
     path.join(tmp, 'package.json'),
     path.join(outdir, 'package.json')
   );

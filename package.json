@@ -29,7 +29,7 @@
     "lint": "eslint --cache *.js src"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=8.5.0"
   },
   "files": [
     "data/**/*.txt",
