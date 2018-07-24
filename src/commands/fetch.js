@@ -5,7 +5,7 @@ const fs = require('../fs');
 const config = require('../config').config;
 const { fetch, jsonStream } = require('../helpers');
 
-const registryUrl = 'https://replicate.npmjs.com/registry/_design/scratch/_view/byField';
+const registryUrl = 'https://skimdb.npmjs.com/registry/_design/scratch/_view/byField';
 
 async function run(filename) {
   console.log('Fetching package list...');
