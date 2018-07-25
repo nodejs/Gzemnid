@@ -362,14 +362,8 @@ async function totals() {
       const out = streams[file];
       const filepath = path.join(tgzdir, file);
       const stream = fs.createReadStream(filepath);
-      const resume = () => stream.resume();
-      out.on('drain', resume);
-      stream.on('data', line => {
-        const ready = out.write(line);
-        if (!ready) stream.pause();
-      });
+      stream.pipe(out, {end: false});
       await promiseEvent(stream, 'end');
-      out.removeListener('drain', resume);
     }
     built++;
     if (built % 10000 === 0) {
