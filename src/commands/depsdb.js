@@ -28,7 +28,8 @@ async function plain() {
     if (count > 0) {
       out.write(', ');
     }
-    out.write(`${JSON.stringify(data.name)}: {\n`);
+    const ready = out.write(`${JSON.stringify(data.name)}: {\n`);
+    if (!ready) await promiseEvent(out, 'drain');
     let depsStringPrev;
     let versionPrev;
     for (const version of Object.keys(data.versions)) {
@@ -126,7 +127,8 @@ async function resolved() {
   for (const [name, versions] of data) {
     if (count > 0)
       out.write(',\n');
-    out.write(`${JSON.stringify(name)}: {\n`);
+    const ready = out.write(`${JSON.stringify(name)}: {\n`);
+    if (!ready) await promiseEvent(out, 'drain');
     for (const version in versions) {
       if (version[0] === '_') continue;
       const key = [name, version].join('-');
