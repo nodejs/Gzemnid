@@ -108,12 +108,22 @@ function packedIn(file, compress = true) {
   return stream.pipe(encoder);
 }
 
-async function readMap(file, type = '$*') {
+async function readCallback(file, type, callback) {
+  let count = 0;
+  const stream = jsonStream(file, type);
+  stream.on('data', obj => {
+    callback(obj.value, obj.key, ++count);
+  });
+  await stream.promise;
+  return count;
+}
+
+async function readMap(file, type = '$*', wrap = undefined) {
   const data = new Map();
   let count = 0;
   const stream = jsonStream(file, type);
   stream.on('data', obj => {
-    data.set(obj.key, obj.value);
+    data.set(obj.key, wrap ? wrap(obj.value, obj.key) : obj.value);
     if (++count % 10000 === 0) console.log(`Read ${count}...`);
   });
   await stream.promise;
@@ -138,5 +148,6 @@ module.exports = {
   packedOut,
   packedIn,
   fetch: fetchWrap,
+  readCallback,
   readMap
 };

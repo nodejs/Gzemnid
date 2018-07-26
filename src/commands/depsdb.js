@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('../fs');
 const config = require('../config').config;
 const semver = require('semver');
-const { readMap, jsonStream, promiseEvent } = require('../helpers');
+const { readCallback, readMap, jsonStream, promiseEvent } = require('../helpers');
 
 async function plain() {
   console.log('Dependencies: cleaning up...');
@@ -58,8 +58,34 @@ async function plain() {
 }
 
 async function resolved() {
-  console.log('Reading deps.json...');
-  const data = await readMap('deps/deps.json');
+  const needfull = new Set();
+  console.log('Prereading deps.json (pass 1/2)...');
+  const total = await readCallback('deps/deps.json', '$*', (info, key, count) => {
+    for (const version of Object.keys(info)) {
+      if (!typeof info[version] === 'object') continue;
+      for (const dep of Object.keys(info[version])) {
+        needfull.add(dep);
+      }
+    }
+    if (++count % 50000 === 0) console.log(`Preread ${count}...`);
+  });
+  console.log(`Preread ${total} pakages, ${needfull.size} have dependents`);
+  console.log('Reading deps.json (pass 2/2)...');
+  const data = await readMap('deps/deps.json', '$*', (info, key) => {
+    if (needfull.has(key)) return info;
+    let ref = info._latest;
+    while (typeof info[ref] !== 'object') {
+      if (!info[ref]) {
+        throw new Error(`${key}: '_latest' points to unknown version!`);
+      }
+      ref = info[ref];
+    }
+    // We need only the _latest version of packages without dependents.
+    const res = { _latest: info._latest };
+    res[res._latest] = info[ref];
+    return res;
+  });
+  needfull.clear();
 
   const matchVersion = (name, spec) => {
     if (!data.has(name))
