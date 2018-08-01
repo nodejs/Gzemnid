@@ -13,5 +13,8 @@
       "ast": false
     },
     "compress": true
+  },
+  "meta": {
+    "compress": true
   }
 }

@@ -4,24 +4,25 @@ const path = require('path');
 const fs = require('../fs');
 const config = require('../config').config;
 const common = require('../common');
-const { toMap, fetch, promiseEvent } = require('../helpers');
+const { toMap, fetch, promiseEvent, packedOut } = require('../helpers');
 
 async function downloadOne(url, file) {
   console.log(`Downloading: ${file}...`);
   const out = path.join(config.dir, 'meta/', file);
   const tmp = `${out}.tmp`;
   const response = (await fetch(url)).body;
-  const write = fs.createWriteStream(tmp);
+  const write = packedOut(tmp, config.meta.compress);
+  const suffix = config.meta.compress ? '.lz4' : '';
   response.pipe(write);
   await promiseEvent(write, 'close');
-  await fs.rename(tmp, out);
+  await fs.rename(`${tmp}${suffix}`, `${out}${suffix}`);
 }
 
 async function run() {
   await fs.mkdirp(path.join(config.dir, 'meta/'));
   console.log('Reading meta directory...');
   const current = await fs.readdir(path.join(config.dir, 'meta/'));
-  const map = toMap(current);
+  const map = toMap(current.map(x => x.replace(/\.lz4$/, '')));
 
   const queue = [];
   await common.listInfo(info => {
