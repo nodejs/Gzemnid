@@ -8,6 +8,23 @@ const fetch = require('node-fetch');
 const lz4 = require('lz4');
 const config = require('./config').config;
 
+// HACK: work-around for https://github.com/nodejs/Gzemnid/issues/18
+// See https://github.com/nodejs/node/issues/21967
+// Should be removed once nodejs/node#21968 gets included into 8.x release
+if (!lz4.createEncoderStream.prototype.__transform) {
+  const prototype = lz4.createEncoderStream.prototype;
+  prototype.__transform = prototype._transform;
+  prototype._transform = function (data, encoding, done) {
+    if (data && Buffer.isBuffer(data) &&
+        data.byteLength !== data.buffer.byteLength &&
+        data.buffer.byteLength > Buffer.poolSize) {
+      // Chunk is coming from fs, clone data to avoid memory consumption bug
+      data = Buffer.from(data);
+    }
+    return this.__transform(data, encoding, done);
+  }
+}
+
 function toMap(arr, value = false) {
   const map = new Map();
   arr.forEach(x => map.set(x, value));
