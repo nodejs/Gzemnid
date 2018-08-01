@@ -225,6 +225,7 @@ async function partial(tgz, rebuild) {
   });
 
   // TODO: only if not exists
+  await fs.chmod(path.join(tmp, 'package.json'), 0o644);
   await copyFile(
     path.join(tmp, 'package.json'),
     path.join(outdir, 'package.json')

@@ -13,6 +13,7 @@ async function rmrf(dir) {
 
 module.exports = {
   rmrf,
+  chmod: util.promisify(fs.chmod),
   copyFile: util.promisify(fs.copyFile),
   createReadStream: fs.createReadStream,
   createWriteStream: fs.createWriteStream,
