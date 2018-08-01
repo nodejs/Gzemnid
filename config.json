@@ -12,6 +12,6 @@
     "features": {
       "ast": false
     },
-    "compress": false
+    "compress": true
   }
 }
