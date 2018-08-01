@@ -66,7 +66,7 @@ async function listTar(file) {
 
 async function slimCode(ext, outdir, tgz, slim) {
   const outfile = path.join(outdir, `slim.code${ext}.txt`);
-  const out = fs.createWriteStream(outfile);
+  const out = packedOut(outfile, config.extract.compress);
   const entries = slim.filter(entry => entry.endsWith(ext));
   for (const entry of entries) {
     const stream = fs.createReadStream(path.join(config.dir, 'tmp', entry));
@@ -139,8 +139,25 @@ async function slimAST(ext, outdir, tgz, slim) {
   await promiseEvent(out, 'close');
 }
 
-async function writeList(file, list) {
-  await fs.writeFile(file, `${list.join('\n')}\n`);
+async function writeList(file, list, compress) {
+  const out = await packedOut(file, config.extract.compress);
+  for (const line of list) {
+    const ready = out.write(`${line}\n`);
+    if (!ready) await promiseEvent(out, 'drain');
+  }
+  out.end();
+  await promiseEvent(out, 'close');
+}
+
+async function copyFile(input, output) {
+  if (config.extract.compress) {
+    const stream = fs.createReadStream(input);
+    const out = await packedOut(output, config.extract.compress);
+    stream.pipe(out);
+    await promiseEvent(out, 'close');
+  } else {
+    await fs.copyFile(input, output);
+  }
 }
 
 async function partial(tgz, rebuild) {
@@ -208,7 +225,7 @@ async function partial(tgz, rebuild) {
   });
 
   // TODO: only if not exists
-  await fs.copyFile(
+  await copyFile(
     path.join(tmp, 'package.json'),
     path.join(outdir, 'package.json')
   );
@@ -362,7 +379,7 @@ async function totals() {
     for (const file of filenames) {
       const out = streams[file];
       const filepath = path.join(tgzdir, file);
-      const stream = fs.createReadStream(filepath);
+      const stream = packedIn(filepath, config.extract.compress);
       stream.pipe(out, {end: false});
       await promiseEvent(stream, 'end');
     }
@@ -439,7 +456,7 @@ async function topcode(arg = 1000) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
     for (const ext of extensions) {
       const filepath = path.join(tgzdir, `slim.code${ext}.txt`);
-      const stream = fs.createReadStream(filepath);
+      const stream = packedIn(filepath, config.extract.compress);
       const resume = () => stream.resume();
       out.on('drain', resume);
       readline.createInterface({
