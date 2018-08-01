@@ -331,13 +331,14 @@ async function totals() {
     console.log('Totals: building packages list...');
     const current = await fs.readdir(path.join(config.dir, 'current/'));
     current.sort();
-    const out = fs.createWriteStream(path.join(outdir, 'packages.txt'));
+    const file = 'packages.txt';
+    const out = packedOut(path.join(outdir, file), config.extract.compress);
     for (const tgz of current) {
       out.write(`${tgz}\n`);
     }
     out.end();
     await promiseEvent(out, 'close');
-    console.log(`Totals: packages.txt complete, ${current.length} packages.`);
+    console.log(`Totals: ${file} complete, ${current.length} packages.`);
   }
 
   console.log('Totals: processing partials...');
