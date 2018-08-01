@@ -19,6 +19,7 @@ assets
 locales
 data
 www
+wwwroot
 webroot
 website
 htdocs
