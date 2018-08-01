@@ -122,3 +122,5 @@ punycode2-*.tgz/test/data.js
 twitter_cldr-*.tgz/full
 unicode-?.?.?-*.tgz
 wast-spec-*.tgz/slides
+lightpack-*.tgz/test/fixtures
+mini-tsc-*.tgz/archive
