@@ -112,6 +112,7 @@ function packedOut(file, compress = true) {
   const encoder = lz4.createEncoderStream({
     highCompression: config.compression.high
   });
+  outstream.on('close', () => encoder.emit('close'));
   encoder.pipe(outstream);
   return encoder;
 }
