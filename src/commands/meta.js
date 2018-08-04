@@ -22,7 +22,8 @@ async function run() {
   await fs.mkdirp(path.join(config.dir, 'meta/'));
   console.log('Reading meta directory...');
   const current = await fs.readdir(path.join(config.dir, 'meta/'));
-  const map = toMap(current.map(x => x.replace(/\.lz4$/, '')));
+  const map = toMap(current);
+  const suffix = config.meta.compress ? '.lz4' : '';
 
   const queue = [];
   await common.listInfo(info => {
@@ -32,9 +33,9 @@ async function run() {
     }
 
     const url = `https://registry.npmjs.org/${info.name}`;
-    const file = `${info.id}.json`;
+    const file = `${info.id}.json${suffix}`;
     if (!map.has(file)) {
-      queue.push([url, file]);
+      queue.push([url, `${info.id}.json`]);
     }
 
     map.set(file, true);
