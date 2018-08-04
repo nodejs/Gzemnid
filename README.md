@@ -49,8 +49,9 @@ Example content: see <https://registry.npmjs.org/qmlweb>.
 
 _Notice: these files are updated only on `latest` version releases, so they might become stale when it comes to beta releases._
 
-Typical size is about 11 GiB, typical bootstrap time is quite long (should be under or about 10
-hours), but further updates are quite fast.
+Typical size with lz4 compression enabled (default) is about 4 GiB,
+typical bootstrap time is quite long (should be under or about 10 hours),
+but further updates are quite fast.
 
 Created via `gzemnid meta`.
 
