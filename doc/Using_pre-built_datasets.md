@@ -8,7 +8,7 @@ for more info, but that is not strictly required.
 
 _Note: scoped packages are unsupported at the moment._
 
-## Location
+## Download
 
 At the moment, the datasets are hosted at <http://gzemnid.oserv.org/datasets/>,
 grouped by the date when dataset build was started (i.e. when packages list was
@@ -16,6 +16,9 @@ synced).
 
 For example, directory `out.2018-07-24/` has dataset which corresponds to the
 registry state at `2018-07-24`.
+
+You most likely do not need to download all the data — proceed below to find
+out which exact files you need to perform a certain task.
 
 Data is lz4-compressed. There is no need to decompress it, except for the case
 when you need to use it elsewhere (most likely that would relate to only jsons).
