@@ -2,6 +2,10 @@
 
 Notice: some commands might require `--max-old-space-size=2000` or above.
 
+## Using pre-built datasets
+
+See documentation on [Using pre-built datasets](/doc/Using_pre-built_datasets.md) page.
+
 ## Data structures
 
 All data files are stored inside the `./pool/` dir by default.
