@@ -8,6 +8,10 @@ for more info, but that is not strictly required.
 
 _Note: scoped packages are unsupported at the moment._
 
+All data was built using Gzemnid and could be re-built on your side at any time,
+this is the exact same data structures that Gzemnid produces, just pre-built and
+hosted.
+
 ## Download
 
 At the moment, the datasets are hosted at <http://gzemnid.oserv.org/datasets/>,
