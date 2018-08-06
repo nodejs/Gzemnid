@@ -3,7 +3,7 @@
 If you want to just consume the datasets (instead of building them on your side)
 and e.g. grep the patterns in the ecosystem usage, this page is for you.
 
-You might also want to read [data structures](Data_structures.md) documentation,
+You might also want to read [data structures](Data_structures.md) documentation
 for more info, but that is not strictly required.
 
 _Note: scoped packages are unsupported at the moment._
@@ -124,7 +124,7 @@ The output includes the list of the packages, installing which (on the date
 when the dataset was built) would end up installing the `package@version`
 matched by the provided regexp, somewhere in the dependency tree.
 
-The list is sorted by downloads/month (desc) and incldes downloads/month.
+The list is sorted by downloads/month (desc) and includes downloads/month.
 
 Internally, `deps-nested.txt` of lines like this:
 ```
@@ -134,11 +134,11 @@ Internally, `deps-nested.txt` of lines like this:
 
 Each line corresponds to a single package with all it's nested dependencies —
 i.e. every versions that would end up installed on the dataset build date if
-one tried to install the latest version of the correpponding package.
+one tried to install the latest version of the corresponding package.
 
 Due to that, a single line could include different versions of a single package,
 that means that `npm i` for that package would result in several versions of
-some dep being installed in the tree.
+some dependency being installed in the tree.
 
 If you would want to search for `lodash@4.1.*`, use `lodash@4.\1\.`,
 if you want to search for `lodash@4.17.1`, use `lodash@4\.17\.1"` to
