@@ -114,7 +114,7 @@ You need:
  * `depsdb.sh` (a bash one-liner for convenience).
 
 Usage: `./depsdb.sh regexp`, where regexp is against `package@version"`
-(note the leading double quote).
+(note the trailing double quote).
 
 The output includes the list of the packages, installing which (on the date
 when the dataset was built) would end up installing the `package@version`
