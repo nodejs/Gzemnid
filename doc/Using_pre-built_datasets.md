@@ -79,7 +79,7 @@ one also includes packages with less than 1000 downloads per month.
 If you do not need those, consider using `topcode` instead.
 
 Example:
-```
+```console
 $ ./search.code.sh 'require\(.sys.\)' | head -5
 MiniMVC-0.0.1.tgz/minimvc.coffee:42:sys = require("sys")
 N-0.1.0.tgz/src/examples/nog/app/posts.coffee:1:sys: require('sys')
@@ -96,7 +96,7 @@ in downloads/month, sorted desc.
 Uncompressed size is about 16 MiB.
 
 Example:
-``` console
+```console
 $ lz4cat stats.json.lz4 | head -5
 {
  "supports-color": 85578705,
@@ -141,7 +141,7 @@ if you want to search for `lodash@4.17.1`, use `lodash@4\.17\.1"` to
 exclude `4.17.10`. Never use `.*` or anything similar.
 
 Example:
-```
+```console
 $ ./depsdb.sh 'lodash@1\.[23]\.' | head -5
 Query: "lodash@1\.[23]\.
 39074   travis-ci
