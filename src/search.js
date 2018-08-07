@@ -6,7 +6,7 @@ const { packedIn, promiseEvent } = require('./helpers');
 const Queue = require('./queue');
 
 const extensions = [
-  'ts', 'coffee', 'js'
+  'mjs', 'ts', 'coffee', 'js'
 ];
 
 const queue = new Queue(3);
