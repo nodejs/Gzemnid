@@ -157,6 +157,18 @@ function fetchWrap(url, opts = {}) {
   return fetch(url, options);
 }
 
+function readFile(file, compress = true) {
+  return new Promise((accept, reject) => {
+    fs.readFile(file, (err, data) => {
+      if (err)
+        return reject(err);
+      if (!compress)
+        return accept(data);
+      return accept(lz4.decode(data));
+    });
+  });
+}
+
 module.exports = {
   toMap,
   readlines,
@@ -167,5 +179,6 @@ module.exports = {
   packedIn,
   fetch: fetchWrap,
   readCallback,
-  readMap
+  readMap,
+  readFile
 };
