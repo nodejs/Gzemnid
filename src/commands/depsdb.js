@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('../fs');
 const config = require('../config').config;
 const semver = require('semver');
-const { readCallback, readMap, jsonStream, promiseEvent } = require('../helpers');
+const { readCallback, readMap, jsonStream, promiseEvent, readFile } = require('../helpers');
 
 async function plain() {
   console.log('Dependencies: cleaning up...');
@@ -20,7 +20,7 @@ async function plain() {
   out.write('{\n');
   let count = 0;
   for (const file of current) {
-    const data = JSON.parse(await fs.readFile(path.join(config.dir, 'meta/', file)));
+    const data = JSON.parse(await readFile(path.join(config.dir, 'meta/', file), config.meta.compress));
     if (!data || !data.versions) {
       console.error(`Versions not defined for ${file}!`);
       continue;
