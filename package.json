@@ -5,6 +5,7 @@
   "dependencies": {
     "JSONStream": "^1.1.4",
     "babylon": "^6.9.1",
+    "changes-stream": "^2.2.0",
     "koa": "^2.0.0",
     "koa-logger": "^2.0.0",
     "koa-route": "^3.0.0",
@@ -18,11 +19,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChALkeR/Gzemnid.git"
+    "url": "git+https://github.com/nodejs/Gzemnid.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ChALkeR/Gzemnid/issues"
+    "url": "https://github.com/nodejs/Gzemnid/issues"
   },
   "bin": "gzemnid.js",
   "scripts": {
