@@ -1,5 +1,5 @@
 {
-  "useragent": "Gzemnid https://github.com/ChALkeR/Gzemnid",
+  "useragent": "Gzemnid https://github.com/nodejs/Gzemnid",
   "dir": "./pool",
   "api": {
     "port": 3000,
