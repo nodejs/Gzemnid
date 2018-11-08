@@ -14,7 +14,7 @@ hosted.
 
 ## Download
 
-At the moment, the datasets are hosted at <http://gzemnid.oserv.org/datasets/>,
+At the moment, the datasets are hosted at <https://gzemnid.nodejs.org/datasets/>,
 grouped by the date when dataset build was started (i.e. when packages list was
 synced).
 
