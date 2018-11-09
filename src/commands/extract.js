@@ -162,18 +162,21 @@ async function copyFile(input, output) {
 
 async function partial(tgz, rebuild) {
   const file = path.join(config.dir, 'current/', tgz);
-  const outdir = path.join(config.dir, 'partials/', tgz);
+  const outfin = path.join(config.dir, 'partials/', tgz);
+  const outdir = `${outfin}.tmp`;
 
   let files;
 
   if (rebuild) {
     try {
-      files = await readlines(path.join(outdir, 'files.txt'));
+      files = await readlines(path.join(outfin, 'files.txt'));
     } catch (e) {
       // Just fall back to reading the tar
     }
   }
 
+  await fs.rmrf(outfin);
+  await fs.rmrf(outdir);
   await fs.mkdirp(outdir);
 
   if (!files) {
@@ -240,6 +243,7 @@ async function partial(tgz, rebuild) {
   }
 
   await fs.rmrf(tmp);
+  await fs.rename(outdir, outfin);
 }
 
 async function partials(subcommand, single) {
