@@ -114,7 +114,7 @@ async function run() {
       tar: data.dist.tarball
     };
     state.packages[info.name] = info;
-    if (change.seq % 10 === 0) {
+    if (change.seq % 500 === 0) {
       console.log(`Seq: ${change.seq}...`);
     }
     if (Date.now() - state.savetime > syncinterval) {
