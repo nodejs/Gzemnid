@@ -7,6 +7,7 @@ const commands = {
   code: require('./commands/code'),
   server: require('./commands/server'),
   fetch: require('./commands/fetch'),
+  sync: require('./commands/sync'),
   meta: require('./commands/meta'),
   depsdb: require('./commands/depsdb'),
   stats: require('./commands/stats'),
