@@ -35,15 +35,8 @@ async function run(filename) {
     }
     data = data.value;
     const info = {
-      id: `${data.name}-${data.version}`,
       name: data.name,
       version: data.version,
-      url: data.bugs && data.bugs.url || data.homepage ||
-           data.repository && data.repository.url || null,
-      user: data._npmUser,
-      npm: data._npmVersion,
-      node: data._nodeVersion,
-      scoped: data.name[0] === '@',
       tar: data.dist.tarball
     };
 

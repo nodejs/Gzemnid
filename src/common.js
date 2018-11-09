@@ -32,7 +32,9 @@ Warning: package list is older than 24 hours!
     if (total % 50000 === 0) {
       console.log(`Reading: ${total}...`);
     }
+    info.scoped = info.name[0] === '@';
     if (info.scoped) return; // FIXME: process scoped packages
+    info.id = `${info.name}-${info.version}`;
     callback(info);
   });
   await stream.promise;
