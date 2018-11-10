@@ -49,6 +49,7 @@ async function write(state) {
   const out = fs.createWriteStream(`${file}.tmp`);
   out.write(JSON.stringify({ registry, seq, errors }, undefined, 2).slice(0, -2));
   out.write(',\n  "packages": [');
+  const seq = state.seq;
   const keys = Object.keys(state.packages);
   const packages = Object.keys(state.packages).sort().map(key => state.packages[key]);
   let i = 0;
@@ -62,10 +63,10 @@ async function write(state) {
   out.end();
   await promiseEvent(out, 'close');
   await fs.rename(`${file}.tmp`, file);
-  state.saved = state.seq;
+  state.saved = seq;
   state.saving = false;
   state.savetime = Date.now();
-  console.log(`Saved state with seq = ${state.seq}`);
+  console.log(`Saved state with seq = ${state.saved}`);
 }
 
 const ignoredIds = new Set([
