@@ -139,7 +139,7 @@ async function slimAST(ext, outdir, tgz, slim) {
   await promiseEvent(out, 'close');
 }
 
-async function writeList(file, list, compress) {
+async function writeList(file, list) {
   const out = await packedOut(file, config.extract.compress);
   for (const line of list) {
     const ready = out.write(`${line}\n`);
@@ -385,7 +385,7 @@ async function totals() {
       const out = streams[file];
       const filepath = path.join(tgzdir, file);
       const stream = packedIn(filepath, config.extract.compress);
-      stream.pipe(out, {end: false});
+      stream.pipe(out, { end: false });
       await promiseEvent(stream, 'end');
     }
     built++;
@@ -457,7 +457,7 @@ async function topcode(arg = 1000) {
 
   const out = packedOut(outfile, config.extract.compress);
   let built = 0;
-  for (const { tgz, name, dm } of packages) {
+  for (const { tgz, dm } of packages) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
     for (const ext of extensions) {
       const filepath = path.join(tgzdir, `slim.code${ext}.txt`);

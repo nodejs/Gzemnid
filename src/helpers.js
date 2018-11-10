@@ -14,7 +14,7 @@ const config = require('./config').config;
 if (!lz4.createEncoderStream.prototype.__transform) {
   const prototype = lz4.createEncoderStream.prototype;
   prototype.__transform = prototype._transform;
-  prototype._transform = function (data, encoding, done) {
+  prototype._transform = function(data, encoding, done) {
     if (data && Buffer.isBuffer(data) &&
         data.byteLength !== data.buffer.byteLength &&
         data.buffer.byteLength > Buffer.poolSize) {
@@ -22,7 +22,7 @@ if (!lz4.createEncoderStream.prototype.__transform) {
       data = Buffer.from(data);
     }
     return this.__transform(data, encoding, done);
-  }
+  };
 }
 
 function toMap(arr, value = false) {

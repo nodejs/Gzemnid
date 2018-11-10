@@ -20,7 +20,11 @@ async function plain() {
   out.write('{\n');
   let count = 0;
   for (const file of current) {
-    const data = JSON.parse(await readFile(path.join(config.dir, 'meta/', file), config.meta.compress));
+    const json = await readFile(
+      path.join(config.dir, 'meta/', file),
+      config.meta.compress
+    );
+    const data = JSON.parse(json);
     if (!data || !data.versions) {
       console.error(`Versions not defined for ${file}!`);
       continue;
@@ -62,7 +66,7 @@ async function resolved() {
   console.log('Prereading deps.json (pass 1/2)...');
   const total = await readCallback('deps/deps.json', '$*', (info, key, count) => {
     for (const version of Object.keys(info)) {
-      if (!typeof info[version] === 'object') continue;
+      if (typeof info[version] !== 'object') continue;
       for (const dep of Object.keys(info[version])) {
         needfull.add(dep);
       }

@@ -9,6 +9,54 @@ const file = './pool/info.json';
 const registry = 'https://replicate.npmjs.com';
 const syncinterval = 10000;
 
+const ignoredIds = new Set([
+  '_design/scratch',
+  '_design/app'
+]);
+
+function verify(change) {
+  if (ignoredIds.has(change.id)) {
+    return { skip: true };
+  }
+  if (change.deleted) {
+    // Deleted revision?
+    return { skip: true };
+  }
+  if (!change.id || !change.doc.versions || !change.doc['dist-tags']) {
+    return {
+      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}`,
+      store: true,
+      skip: true
+    };
+  }
+  if (Object.keys(change.doc.versions).length === 0) {
+    return {
+      log: `No versions for package, deleting from info: seq = ${change.seq}, id = ${change.id}`,
+      del: true
+    };
+  }
+  if (!change.doc['dist-tags'].latest) {
+    return {
+      log: `No 'latest' tag for package, skipping change: seq = ${change.seq}, id = ${change.id}`,
+      store: true,
+      skip: true
+    };
+  }
+  const versions = Object.keys(change.doc.versions);
+  const version = versions.length === 1 ? versions[0] : change.doc['dist-tags'].latest;
+  const data = change.doc.versions[version];
+  if (!data || data.name !== change.id || version !== data.version ||
+      data._id && data._id !== `${data.name}@${data.version}` && data._id !== `${data.name}@v${data.version}`) {
+    return {
+      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}, version = ${version}`,
+      store: true,
+      skip: true
+    };
+    return;
+  }
+  return { ok: true, version, data };
+}
+
 async function read(required = false) {
   try {
     // TODO: this is a hack, add streamed reading
@@ -69,54 +117,6 @@ async function write(state) {
   console.log(`Saved state with seq = ${state.saved}`);
 }
 
-const ignoredIds = new Set([
-  '_design/scratch',
-  '_design/app',
-]);
-
-function verify(change) {
-  if (ignoredIds.has(change.id)) {
-    return { skip: true };
-  }
-  if (change.deleted) {
-    // Deleted revision?
-    return { skip: true };
-  }
-  if (!change.id || !change.doc.versions || !change.doc['dist-tags']) {
-    return {
-      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}`,
-      store: true,
-      skip: true
-    };
-  }
-  if (Object.keys(change.doc.versions).length === 0) {
-    return {
-      log: `No versions for package, deleting from info: seq = ${change.seq}, id = ${change.id}`,
-      del: true
-    };
-  }
-  if (!change.doc['dist-tags'].latest) {
-    return {
-      log: `No 'latest' tag for package, skipping change: seq = ${change.seq}, id = ${change.id}`,
-      store: true,
-      skip: true
-    };
-  }
-  const versions = Object.keys(change.doc.versions);
-  const version = versions.length === 1 ? versions[0] : change.doc['dist-tags'].latest;
-  const data = change.doc.versions[version];
-  if (!data || data.name !== change.id || version !== data.version ||
-      data._id && data._id !== `${data.name}@${data.version}` && data._id !== `${data.name}@v${data.version}`) {
-    return {
-      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}, version = ${version}`,
-      store: true,
-      skip: true
-    };
-    return;
-  }
-  return { ok: true, version, data };
-}
-
 function streamChanges(state) {
   const changes = new ChangesStream({
     db: registry,
@@ -158,7 +158,8 @@ async function run() {
   console.log('Replicating state...');
   const state = await read();
   console.log(`Initialized state with seq = ${state.seq}`);
-  const changes = streamChanges(state);
+  streamChanges(state);
+  // TODO: stop when synced
 }
 
 
@@ -173,7 +174,7 @@ async function watch() {
   }
   console.log(`Initialized state with seq = ${state.seq}`);
   const changes = streamChanges(state);
-  changes.on('change', block => {
+  changes.on('change', () => {
     throw new Error('Not implemented yet!');
   });
 }
