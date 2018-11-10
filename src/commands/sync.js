@@ -24,20 +24,23 @@ function verify(change) {
   }
   if (!change.id || !change.doc.versions || !change.doc['dist-tags']) {
     return {
-      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}`,
+      warn: 'Inconsistent data in registry, skipping change: ' +
+            `seq = ${change.seq}, id = ${change.id}`,
       store: true,
       skip: true
     };
   }
   if (Object.keys(change.doc.versions).length === 0) {
     return {
-      log: `No versions for package, deleting from info: seq = ${change.seq}, id = ${change.id}`,
+      log: 'No versions for package, deleting from info: ' +
+           `seq = ${change.seq}, id = ${change.id}`,
       del: true
     };
   }
   if (!change.doc['dist-tags'].latest) {
     return {
-      log: `No 'latest' tag for package, skipping change: seq = ${change.seq}, id = ${change.id}`,
+      log: 'No \'latest\' tag for package, skipping change: ' +
+           `seq = ${change.seq}, id = ${change.id}`,
       store: true,
       skip: true
     };
@@ -46,13 +49,14 @@ function verify(change) {
   const version = versions.length === 1 ? versions[0] : change.doc['dist-tags'].latest;
   const data = change.doc.versions[version];
   if (!data || data.name !== change.id || version !== data.version ||
-      data._id && data._id !== `${data.name}@${data.version}` && data._id !== `${data.name}@v${data.version}`) {
+      data._id && data._id !== `${data.name}@${data.version}` &&
+      data._id !== `${data.name}@v${data.version}`) {
     return {
-      warn: `Inconsistent data in registry, skipping change: seq = ${change.seq}, id = ${change.id}, version = ${version}`,
+      warn: 'Inconsistent data in registry, skipping change: ' +
+            `seq = ${change.seq}, id = ${change.id}, version = ${version}`,
       store: true,
       skip: true
     };
-    return;
   }
   return { ok: true, version, data };
 }
@@ -94,12 +98,13 @@ async function write(state) {
   if (state.saving) return;
   console.log('Saving...');
   state.saving = true;
-  const { registry, seq, errors } = state;
+  const { seq, errors } = state;
+  if (state.registry !== registry) throw new Error('Unexpected');
   const out = fs.createWriteStream(`${file}.tmp`);
   out.write(JSON.stringify({ registry, seq, errors }, undefined, 2).slice(0, -2));
   out.write(',\n  "packages": [');
-  const keys = Object.keys(state.packages);
-  const packages = Object.keys(state.packages).sort().map(key => state.packages[key]);
+  const keys = Object.keys(state.packages).sort();
+  const packages = keys.map(key => state.packages[key]);
   let i = 0;
   for (const pkg of packages) {
     if (!pkg) continue;
@@ -148,7 +153,9 @@ function streamChanges(state) {
       console.log(`Seq: ${change.seq}...`);
     }
     if (Date.now() - state.savetime > syncinterval) {
-      write(state).catch(e => { throw e; });
+      write(state).catch(e => {
+        throw e;
+      });
     }
   });
   return changes;

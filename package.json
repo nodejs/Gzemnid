@@ -27,7 +27,8 @@
   },
   "bin": "gzemnid.js",
   "scripts": {
-    "lint": "eslint --cache *.js src"
+    "test": "npm run lint",
+    "lint": "eslint --cache gzemnid.js src"
   },
   "engines": {
     "node": ">=8.5.0"
