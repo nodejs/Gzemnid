@@ -9,7 +9,7 @@ const file = './pool/info.json';
 const registry = 'https://replicate.npmjs.com';
 const syncinterval = 10000;
 
-async function read() {
+async function read(required = false) {
   try {
     // TODO: this is a hack, add streamed reading
     const json = JSON.parse(fs_.readFileSync(file));
@@ -28,6 +28,7 @@ async function read() {
     }
     return json;
   } catch (e) {
+    if (required) throw new Error(`Could not read synced state from ${file}`);
     return {
       registry,
       seq: 0,
@@ -117,19 +118,13 @@ function verify(change) {
   return { ok: true, version, data };
 }
 
-async function run() {
-  console.log('Replicating state...');
-
-  const state = await read();
-  console.log(`Initialized state with seq = ${state.seq}`);
-
+function streamChanges(state) {
   const changes = new ChangesStream({
     db: registry,
     style: 'main_only',
     since: state.seq,
     include_docs: true
   });
-
   changes.on('data', change => {
     state.seq = change.seq;
     const block = verify(change);
@@ -137,6 +132,7 @@ async function run() {
     if (block.log) console.log(block.log);
     if (block.warn) console.warn(block.warn);
     if (block.skip) return;
+    changes.emit('change', block);
     if (block.del) {
       state.packages[change.id] = null;
       return;
@@ -156,11 +152,31 @@ async function run() {
       write(state).catch(e => { throw e; });
     }
   });
+  return changes;
+}
+
+async function run() {
+  console.log('Replicating state...');
+  const state = await read();
+  console.log(`Initialized state with seq = ${state.seq}`);
+  const changes = streamChanges(state);
 }
 
 
 async function watch() {
-  console.error('Not implemented yet!');
+  console.log('Replicating state with live rebuilds...');
+  let state;
+  try {
+    state = await read(true);
+  } catch (e) {
+    console.error(`Error: ${e.message}\nTry running \`gzemnid sync\` first.`);
+    return;
+  }
+  console.log(`Initialized state with seq = ${state.seq}`);
+  const changes = streamChanges(state);
+  changes.on('change', block => {
+    throw new Error('Not implemented yet!');
+  });
 }
 
 module.exports = {
