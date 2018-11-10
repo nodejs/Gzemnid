@@ -50,7 +50,6 @@ async function write(state) {
   const out = fs.createWriteStream(`${file}.tmp`);
   out.write(JSON.stringify({ registry, seq, errors }, undefined, 2).slice(0, -2));
   out.write(',\n  "packages": [');
-  const seq = state.seq;
   const keys = Object.keys(state.packages);
   const packages = Object.keys(state.packages).sort().map(key => state.packages[key]);
   let i = 0;
