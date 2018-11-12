@@ -387,7 +387,12 @@ async function totals() {
       const filepath = path.join(tgzdir, file);
       const stream = packedIn(filepath, config.extract.compress);
       stream.pipe(out, { end: false });
-      await promiseEvent(stream, 'end');
+      try {
+        await promiseEvent(stream, 'end');
+      } catch (e) {
+        console.log(`Error while processing ${tgz}/${file}: ${e}`);
+        throw e;
+      }
     }
     built++;
     if (built % 10000 === 0) {
