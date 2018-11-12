@@ -285,6 +285,7 @@ async function partials(subcommand, single) {
     } catch (e) {
       console.error(`Partial: failed ${tgz}: ${e}`);
       errors++;
+      await fs.rmrf(path.join(config.dir, 'partials/', `${tgz}.tmp`));
       await fs.rmrf(path.join(config.dir, 'partials/', tgz));
       await fs.rmrf(path.join(config.dir, 'tmp/', tgz));
       continue;
