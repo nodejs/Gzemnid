@@ -17,7 +17,7 @@ async function code(query, languages, callback) {
     languages = languages.split(',');
   }
   for (const ext of extensions) {
-    if (languages && languages.indexOf(ext) === -1) return;
+    if (languages && languages.indexOf(ext) === -1) continue;
     const infile = path.join(config.dir, 'out/', `slim.code.${ext}.txt`);
     const stream = packedIn(infile, config.extract.compress);
     const regex = new RegExp(query);
