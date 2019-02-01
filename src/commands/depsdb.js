@@ -24,7 +24,13 @@ async function plain() {
       path.join(config.dir, 'meta/', file),
       config.meta.compress
     );
-    const data = JSON.parse(json);
+    let data;
+    try {
+      data = JSON.parse(json);
+    } catch (e) {
+      console.error(`Failed to parse file: ${file}`);
+      throw e;
+    }
     if (!data || !data.versions) {
       console.error(`Versions not defined for ${file}!`);
       continue;
