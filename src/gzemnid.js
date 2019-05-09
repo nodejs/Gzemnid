@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const configManager = require('./config');
 
 const commands = {
@@ -18,7 +19,7 @@ const commands = {
 async function main(argv) {
   await configManager.load();
   argv.shift();
-  if (argv.length > 0 && argv[0].endsWith('gzemnid.js')) {
+  if (argv.length > 0 && path.basename(argv[0], '.js') === 'gzemnid') {
     argv.shift();
   }
   if (argv.length === 0) {
