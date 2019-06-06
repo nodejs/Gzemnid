@@ -146,6 +146,7 @@ function streamChanges(state) {
     const info = {
       name: data.name,
       version: data.version,
+      maintainers: data.maintainers,
       tar: data.dist.tarball
     };
     state.packages[info.name] = info;
@@ -190,4 +191,3 @@ module.exports = {
   run,
   watch
 };
-
