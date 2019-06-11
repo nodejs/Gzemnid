@@ -3,11 +3,10 @@
 const fs = require('../fs');
 const { promiseEvent } = require('../helpers');
 const fs_ = require('fs');
-const ChangesStream = require('changes-stream');
 
 const file = './pool/info.json';
-const registry = 'https://replicate.npmjs.com';
 const syncinterval = 10000;
+const { replicate } = require('../replicate');
 
 const ignoredIds = new Set([
   '_design/scratch',
@@ -65,7 +64,6 @@ async function read(required = false) {
   try {
     // TODO: this is a hack, add streamed reading
     const json = JSON.parse(fs_.readFileSync(file));
-    if (json.registry !== registry) throw new Error('Registry mismatch!');
     const packages = {};
     for (const pkg of json.packages) {
       packages[pkg.name] = pkg;
@@ -82,7 +80,6 @@ async function read(required = false) {
   } catch (e) {
     if (required) throw new Error(`Could not read synced state from ${file}`);
     return {
-      registry,
       seq: 0,
       packages: {},
       errors: [],
@@ -99,9 +96,8 @@ async function write(state) {
   console.log('Saving...');
   state.saving = true;
   const { seq, errors } = state;
-  if (state.registry !== registry) throw new Error('Unexpected');
   const out = fs.createWriteStream(`${file}.tmp`);
-  out.write(JSON.stringify({ registry, seq, errors }, undefined, 2).slice(0, -2));
+  out.write(JSON.stringify({ seq, errors }, undefined, 2).slice(0, -2));
   out.write(',\n  "packages": [');
   const keys = Object.keys(state.packages).sort();
   const packages = keys.map(key => state.packages[key]);
@@ -122,13 +118,8 @@ async function write(state) {
   console.log(`Saved state with seq = ${state.saved}`);
 }
 
-function streamChanges(state) {
-  const changes = new ChangesStream({
-    db: registry,
-    style: 'main_only',
-    since: state.seq,
-    include_docs: true
-  });
+async function streamChanges(state) {
+  const changes = await replicate(state.seq);
   changes.on('data', change => {
     state.seq = change.seq;
     const block = verify(change);
@@ -166,7 +157,7 @@ async function run() {
   console.log('Replicating state...');
   const state = await read();
   console.log(`Initialized state with seq = ${state.seq}`);
-  streamChanges(state);
+  await streamChanges(state);
   // TODO: stop when synced
 }
 
