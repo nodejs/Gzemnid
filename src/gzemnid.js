@@ -41,5 +41,8 @@ process.on('exit', () => {
 });
 process.on('SIGPIPE', () => process.exit());
 process.on('SIGTERM', () => process.exit());
+process.on('unhandledRejection', err => {
+  throw err;
+});
 
 main(process.argv).catch(e => console.error(e.stack));
