@@ -12,7 +12,7 @@ async function run() {
 
   api.use(logger());
 
-  api.use(async (ctx, next) => {
+  api.use(async(ctx, next) => {
     ctx.res.on('close', () => {
       ctx.state.closed = true;
     });
@@ -45,7 +45,7 @@ async function run() {
       // TODO: handle early close
     });
 
-    setImmediate(async () => {
+    setImmediate(async() => {
       ctx.res.flushHeaders();
       await search.code(ctx.query.query, null, line =>
         ctx.body.write(`${line}\n`)
