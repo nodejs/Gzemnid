@@ -45,7 +45,7 @@ async function loadExcluded() {
         x = `${x}(/|$)`;
       }
       x = x.replace(/\\\*/g, '.*')
-           .replace(/\\\?/g, '.');
+        .replace(/\\\?/g, '.');
       return new RegExp(x);
     });
   return excludedLoaded;
@@ -58,10 +58,10 @@ async function listTar(file) {
     { maxBuffer: 50 * 1024 * 1024 }
   );
   return tar.stdout
-            .split('\n')
-            .filter(x => !!x)
-            .filter(x => x !== 'package')
-            .sort();
+    .split('\n')
+    .filter(x => !!x)
+    .filter(x => x !== 'package')
+    .sort();
 }
 
 async function slimCode(ext, outdir, tgz, slim) {
@@ -185,7 +185,7 @@ async function partial(tgz, rebuild) {
       throw new Error('Package contains top-level files!');
     }
     files = lines.map(x => x.replace(/[^/]*\//, ''))
-                 .map(x => `${tgz}/${x}`);
+      .map(x => `${tgz}/${x}`);
     await writeList(path.join(outdir, 'files.txt'), files);
     // TODO: rebuild new extensions on extensions list changes
     for (const ext of extensions) {

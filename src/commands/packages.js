@@ -35,7 +35,7 @@ async function run() {
     }
 
     const url = info.tar.replace('http://', 'https://')
-                        .replace('registry.npmjs.org', 'registry.npmjs.com');
+      .replace('registry.npmjs.org', 'registry.npmjs.com');
     const file = url.replace(`https://registry.npmjs.com/${info.name}/-/`, '');
 
     if (file.replace(/[@0v-]/g, '') !== `${info.id.replace(/[@0v-]/g, '')}.tgz`) {

@@ -1,7 +1,6 @@
 'use strict';
 
 class Queue {
-
   constructor(limit = 1) {
     this.limit = limit;
     this.busy = 0;
