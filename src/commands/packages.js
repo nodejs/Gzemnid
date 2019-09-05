@@ -6,7 +6,9 @@ const config = require('../config').config;
 const common = require('../common');
 const { readlines, toMap, fetch, promiseEvent } = require('../helpers');
 
-async function downloadOne(url, file) {
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function downloadOneImpl(url, file) {
   console.log(`Downloading: ${file}...`);
   const out = path.join(config.dir, 'current/', file);
   const tmp = `${out}.tmp`;
@@ -15,6 +17,19 @@ async function downloadOne(url, file) {
   response.pipe(write);
   await promiseEvent(write, 'close');
   await fs.rename(tmp, out);
+}
+
+async function downloadOne(url, file) {
+  try {
+    await downloadOneImpl(url, file);
+  } catch (e) {
+    if (e.code === 'ENETUNREACH') {
+      console.log(`ENETUNREACH ${url}, retrying`);
+      await sleep(1000);
+      return downloadOne(url, file);
+    }
+    throw e;
+  }
 }
 
 async function run() {
