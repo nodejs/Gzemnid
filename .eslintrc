@@ -102,3 +102,4 @@ rules:
 globals:
   Map: false
   Set: false
+  fetch: false
