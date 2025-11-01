@@ -29,7 +29,7 @@ async function getGroups(map) {
   let group = [];
   let needed = 0;
 
-  const total = await common.listInfo(info => {
+  const total = await common.listInfo({}, info => {
     const name = info.name;
     if (map.has(name)) return;
     needed++;

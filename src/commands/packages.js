@@ -26,7 +26,7 @@ async function downloadOne(url, file) {
     if (e.code === 'ENETUNREACH') {
       console.log(`ENETUNREACH ${url}, retrying`);
       await sleep(1000);
-      return downloadOne(url, file);
+      await downloadOne(url, file);
     }
     throw e;
   }
@@ -43,7 +43,7 @@ async function run() {
 
   const queue = [];
   let size = 0;
-  await common.listInfo(info => {
+  await common.listInfo({}, info => {
     if (!info.tar) {
       console.log(`${info.id}: no tar!`);
       return;
@@ -51,9 +51,15 @@ async function run() {
 
     const url = info.tar.replace('http://', 'https://')
       .replace('registry.npmjs.org', 'registry.npmjs.com');
-    const file = url.replace(`https://registry.npmjs.com/${info.name}/-/`, '');
+    const file = info.scoped ?
+      url.replace(
+        `https://registry.npmjs.com/${info.name}/-/${info.name.split('/')[1]}-`,
+        `${info.name.replace(/\//, ':')}-` // once
+      ) : url.replace(`https://registry.npmjs.com/${info.name}/-/`, '');
 
-    if (file.replace(/[@0v-]/g, '') !== `${info.id.replace(/[@0v-]/g, '')}.tgz`) {
+    if (
+      file.replace(/[@0v-]/g, '') !== `${info.id.replace(/\//, ':').replace(/[@0v-]/g, '')}.tgz`
+    ) {
       console.log(`${info.id}: bad tar - ${info.tar}`);
       return;
     }

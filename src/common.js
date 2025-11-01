@@ -6,7 +6,7 @@ const { config } = require('./config');
 const { jsonLines } = require('./helpers');
 const fetch = require('./commands/fetch');
 
-async function listInfo(callback, initial = true) {
+async function listInfo(options, callback, initial = true) {
   const file = 'byField.info.json';
 
   try {
@@ -22,7 +22,7 @@ Warning: package list is older than 24 hours!
   } catch (e) {
     if (!initial) throw e;
     await fetch.run();
-    return await listInfo(callback, false);
+    return await listInfo(options, callback, false);
   }
 
   const stream = jsonLines(file);
@@ -33,7 +33,8 @@ Warning: package list is older than 24 hours!
       console.log(`Reading: ${total}...`);
     }
     info.scoped = info.name[0] === '@';
-    if (info.scoped) return; // FIXME: process scoped packages
+    if (options.scoped === false && info.scoped) return; // FIXME: process scoped packages
+    if (options.scoped === true && !info.scoped) return;
     info.id = `${info.name}-${info.version}`;
     callback(info);
   });

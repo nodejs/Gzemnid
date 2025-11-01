@@ -26,7 +26,7 @@ async function run() {
   const suffix = config.meta.compress ? '.lz4' : '';
 
   const queue = [];
-  await common.listInfo(info => {
+  await common.listInfo({ scoped: false }, info => {
     if (!info.tar) {
       console.log(`${info.id}: no tar!`);
       return;
