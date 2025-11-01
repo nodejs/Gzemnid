@@ -15,6 +15,7 @@ const execFile = util.promisify(child_process.execFile);
 
 const extensions = [
   //'.php', '.json', '.txt',
+  '.jsx', '.cjs', '.mts', '.cts',
   '.ts', '.coffee', '.js', '.mjs'
 ];
 
