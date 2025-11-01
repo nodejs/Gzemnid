@@ -452,7 +452,8 @@ async function topcode(arg = 1000) {
   const packages = available.map(tgz => {
     const match = tgz.match(regex);
     if (!match) throw new Error(`Unrecognized name: ${tgz}`);
-    const name = match[1];
+    let name = match[1];
+    if (name[0] === '@') name = name.replace(/:/, '/'); // fix scoped
     const dm = info.get(name);
     return { tgz, name, dm };
   }).filter(({ dm }) => dm > limit);
