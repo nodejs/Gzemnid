@@ -3,6 +3,8 @@
 const fs = require('../fs');
 const path = require('path');
 const config = require('../config').config;
+
+/*
 const common = require('../common');
 const { fetch } = require('../helpers');
 
@@ -67,6 +69,7 @@ async function fetchStats(group, info) {
   }
   return res.json();
 }
+*/
 
 function sortStringify(stats) {
   const names = Object.keys(stats);
@@ -89,6 +92,9 @@ function sortStringify(stats) {
 
 async function update() {
   const file = path.join(config.dir, 'stats.json');
+  console.log('Loading download-counts package...');
+  const data = require('download-counts');
+  /*
   const data = await fs.readFile(file)
     .then(JSON.parse)
     .catch(() => ({}));
@@ -117,6 +123,7 @@ async function update() {
     console.log(`Processed: ${info.processed}/${info.needed}, saved: ${saved}/${info.total}.`);
     await fs.writeFile(file, JSON.stringify(data, undefined, 1));
   }
+  */
   console.log('Writing sorted stats...');
   await fs.writeFile(file, sortStringify(data));
   console.log('Stats finished!');
