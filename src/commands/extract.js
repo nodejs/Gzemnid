@@ -59,11 +59,21 @@ async function listTar(file) {
     ['--list', '--warning=no-unknown-keyword', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
+
+  let prev = '';
   return tar.stdout
     .split('\n')
     .filter(x => !!x)
     .filter(x => x !== 'package')
-    .sort();
+    .sort()
+    .reverse()
+    .filter(x => {
+      // exclude dirs to avoid failures on attempting to read dirs named .js
+      if (prev.startsWith(`${x}/`) || prev.startsWith(`${x}\\`)) return false;
+      prev = x;
+      return true;
+    })
+    .reverse();
 }
 
 async function slimCode(ext, outdir, tgz, slim) {
