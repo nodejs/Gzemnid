@@ -18,6 +18,8 @@ const extensions = [
   '.ts', '.coffee', '.js', '.mjs'
 ];
 
+const tarBin = process.platform === 'darwin' ? 'gtar' : 'tar';
+
 let excludedLoaded;
 async function loadExcluded() {
   if (excludedLoaded) return excludedLoaded;
@@ -53,7 +55,7 @@ async function loadExcluded() {
 
 async function listTar(file) {
   const tar = await execFile(
-    'tar',
+    tarBin,
     ['--list', '--warning=no-unknown-keyword', '-f', file],
     { maxBuffer: 50 * 1024 * 1024 }
   );
@@ -221,7 +223,7 @@ async function partial(tgz, rebuild) {
       args.push(`*${ext}`);
     }
   }
-  await execFile('tar', args, {
+  await execFile(tarBin, args, {
     cwd: tmp,
     stdio: 'ignore',
     maxBuffer: 50 * 1024 * 1024
