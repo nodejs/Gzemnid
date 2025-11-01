@@ -1,5 +1,6 @@
 'use strict';
 
+/*
 const fs = require('./fs');
 const { promiseEvent, packedIn, packedOut } = require('./helpers');
 const readline = require('readline');
@@ -48,6 +49,7 @@ async function read(ee, seq = 0) {
 }
 
 async function replicate(seq) {
+  throw new Error('Unsupported for now. Use "gzemnid select" instead.')
   await fs.mkdirp(dir);
   const ee = new EventEmitter();
   read(ee, seq).then(lastseq => {
@@ -83,6 +85,11 @@ async function replicate(seq) {
     });
   });
   return ee;
+}
+*/
+
+async function replicate() {
+  throw new Error('Unsupported for now. Use "gzemnid select" instead.');
 }
 
 module.exports = { replicate };

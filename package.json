@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
-    "@npmcorp/changes-stream": "^1.0.0",
     "JSONStream": "^1.1.4",
     "babylon": "^6.9.1",
     "download-counts": "^2.20251015.0",
