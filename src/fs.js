@@ -1,9 +1,9 @@
 'use strict';
 
 const fs = require('fs');
+const fsp = require('fs/promises');
 const util = require('util');
 const child_process = require('child_process');
-const mkdirp = require('mkdirp');
 
 const execFile = util.promisify(child_process.execFile);
 
@@ -12,16 +12,9 @@ async function rmrf(dir) {
 }
 
 module.exports = {
+  ...fsp,
   rmrf,
-  chmod: util.promisify(fs.chmod),
-  copyFile: util.promisify(fs.copyFile),
   createReadStream: fs.createReadStream,
   createWriteStream: fs.createWriteStream,
-  stat: util.promisify(fs.stat),
-  rename: util.promisify(fs.rename),
-  readdir: util.promisify(fs.readdir),
-  readFile: util.promisify(fs.readFile),
-  writeFile: util.promisify(fs.writeFile),
-  unlink: util.promisify(fs.unlink),
-  mkdirp: util.promisify(mkdirp)
+  mkdirp: (arg) => fsp.mkdir(arg, { recursive: true })
 };
