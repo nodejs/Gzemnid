@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
-    "JSONStream": "^1.1.4",
     "babylon": "^6.9.1",
     "download-counts": "^2.20251015.0",
+    "JSONStream": "^1.1.4",
     "koa": "^2.0.0",
     "koa-logger": "^2.0.0",
     "koa-route": "^3.0.0",
