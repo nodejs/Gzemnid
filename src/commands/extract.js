@@ -63,6 +63,7 @@ async function listTar(file) {
 
   let prev = '';
   return tar.stdout
+    .replaceAll('\\b', '\b') // present in some filenames, ok. Don't replace with a generic though
     .split('\n')
     .filter(x => !!x)
     .filter(x => x !== 'package')
