@@ -3,6 +3,9 @@
 const path = require('path');
 const configManager = require('./config');
 
+// For old Node.js
+if (!globalThis.fetch) globalThis.fetch = require('undici').fetch;
+
 const commands = {
   ast: require('./commands/ast'),
   code: require('./commands/code'),
