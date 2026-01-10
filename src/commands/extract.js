@@ -473,10 +473,13 @@ async function topcode(arg = 1000) {
   console.log('Topcode: starting...');
   const outdir = path.join(config.dir, 'out/');
   const outfile = path.join(outdir, `slim.topcode.${limit}.txt`);
+  const pkgjsonfile = path.join(outdir, `package.json.${limit}.txt`);
   await fs.rmrf(outfile);
+  await fs.rmrf(pkgjsonfile);
   await fs.mkdirp(outdir);
 
   const out = packedOut(outfile, config.extract.compress);
+  const pkgjson = packedOut(pkgjsonfile, config.extract.compress);
   let built = 0;
   for (const { tgz, dm } of packages) {
     const tgzdir = path.join(config.dir, 'partials/', tgz);
@@ -494,13 +497,33 @@ async function topcode(arg = 1000) {
       await promiseEvent(stream, 'end');
       out.removeListener('drain', resume);
     }
+
+    // package.json
+    {
+      const filepath = path.join(tgzdir, 'package.json');
+      const stream = packedIn(filepath, config.extract.compress);
+      const resume = () => stream.resume();
+      pkgjson.on('drain', resume);
+      let num = 0;
+      readline.createInterface({
+        input: stream
+      }).on('line', line => {
+        num++;
+        const ready = pkgjson.write(`${dm}\t${tgz}/package.json:${num}:${line}\n`);
+        if (!ready) stream.pause();
+      });
+      await promiseEvent(stream, 'end');
+      pkgjson.removeListener('drain', resume);
+    }
+
     built++;
     if (built % 100 === 0) {
       console.log(`Topcode: building ${built} / ${packages.length}...`);
     }
   }
   out.end();
-  await promiseEvent(out, 'close');
+  pkgjson.end();
+  await Promise.all([promiseEvent(out, 'close'), promiseEvent(pkgjson, 'close')]);
 
   console.log(`Topcode: processed ${built} partials.`);
   console.log('Topcode: done!');
